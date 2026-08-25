@@ -54,6 +54,24 @@
   .brand .mark{
     font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;
     color:var(--text);
+    position:relative;overflow:hidden;padding:2px 5px;display:inline-block;
+  }
+  .brand .mark::after{
+    content:"";position:absolute;top:-15%;left:-15%;width:3px;height:130%;
+    background:linear-gradient(180deg, transparent, var(--brand) 40%, var(--brand) 60%, transparent);
+    box-shadow:0 0 10px 2px var(--brand);
+    opacity:0;pointer-events:none;
+    animation:radarSweep 4.5s ease-in-out infinite;
+  }
+  @keyframes radarSweep{
+    0%{ left:-15%; opacity:0; }
+    5%{ opacity:.85; }
+    42%{ left:108%; opacity:.85; }
+    48%{ opacity:0; }
+    100%{ opacity:0; left:-15%; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .brand .mark::after{ animation:none; display:none; }
   }
   .brand .mark span{color:var(--brand);}
   .brand .tag{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
