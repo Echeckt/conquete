@@ -117,7 +117,17 @@
   .legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px;}
 
   #mapholder{width:100%;display:flex;justify-content:center;padding:6px 0 2px;}
-  svg#fr-map{width:100%;max-width:640px;height:auto;}
+  svg#fr-map{width:100%;max-width:640px;height:auto;touch-action:none;cursor:grab;}
+  svg#fr-map.dragging{cursor:grabbing;}
+  .zoom-controls{position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:6px;z-index:5;}
+  .zoom-btn{
+    width:32px;height:32px;border-radius:8px;background:var(--panel-2);
+    border:1px solid var(--border);color:var(--text);font-size:16px;line-height:1;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .zoom-btn:hover{background:var(--border);}
+  .zoom-btn:active{transform:translateY(1px);}
   svg#fr-map path{stroke:#05060a;stroke-width:1;}
   svg#fr-map .dept{cursor:pointer;transition:filter .15s ease, fill .25s ease;fill:var(--unclaimed);}
   svg#fr-map .dept:hover{filter:brightness(1.3);}
@@ -228,7 +238,12 @@
           <span><span class="sw" style="background:var(--brand);"></span>réclamée</span>
         </div>
       </div>
-      <div id="mapholder">
+      <div id="mapholder" style="position:relative;">
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoomInBtn" title="Zoomer" type="button">+</button>
+          <button class="zoom-btn" id="zoomOutBtn" title="Dézoomer" type="button">−</button>
+          <button class="zoom-btn" id="zoomResetBtn" title="Réinitialiser la vue" type="button">⤾</button>
+        </div>
         <svg id="fr-map" viewBox="105 18 568 567" xmlns="http://www.w3.org/2000/svg">
 <g class="region region-11" data-nom="Île-de-France" data-code_insee="11">
 		<path id="dept-75" class="dept region-11 departement departement-75 departement-paris" data-nom="Paris" data-numerodepartement="75" d="m641.8 78.3l-0.2 3.8-1 2.6-8.3-1.7-6-0.6-5.2 3h-4l-2.5-0.3-0.4-0.1-13.5-5-3-3.8-4.3-1.9-0.5-0.2 0.4-1.9 1.3-3.1 2.7-2.1 2.9-1.1 3.9 0.5h0.1l0.9-2.2 7.1-4.6 14-0.1 1.8 3.6 1.8 2.4 0.6 0.9 0.1 0.4 0.5 1.2 0.4 5.4 0.4 1.8v0.1l-0.3 0.8 0.1 3.6 0.6-0.5 1.6-1.6 2-0.5 2-0.5zm-245 76.4l-3.2-0.5-2.5 1.7 3 3.5 5.3-0.1-1.8-1.9z"/>
@@ -373,9 +388,6 @@
 
   </div>
 
-  <footer class="note">
-    Carte des départements basée sur un tracé SVG libre des départements français. Prototype non affilié à warmap.lol — état partagé en temps réel via Supabase.
-  </footer>
 </div>
 
 <!-- Claim modal -->
@@ -559,7 +571,7 @@
     const safe = safeUrl(url);
     const style = extraStyle || '';
     if(!safe) return `<span style="${style}">${escapeHtml(name)}</span>`;
-    return `<a href="${safe}" target="_blank" rel="noopener noreferrer nofollow" style="${style}text-decoration:none;border-bottom:1px dotted currentColor;" title="${escapeHtml(safe)}">${escapeHtml(name)} ↗</a>`;
+    return `<a href="${safe}" target="_blank" rel="noopener noreferrer nofollow" style="${style}color:inherit;text-decoration:none;border-bottom:1px dotted currentColor;" title="${escapeHtml(safe)}">${escapeHtml(name)} ↗</a>`;
   }
 
   // ---- Derived data ----
@@ -805,6 +817,108 @@
 
   loadInitial();
   subscribeRealtime();
+
+  // ---- Déplacement (drag) + zoom de la carte ----
+  (function setupMapPanZoom(){
+    const svgEl = document.getElementById('fr-map');
+    if(!svgEl) return;
+    const VB_INIT = {x:105, y:18, w:568, h:567};
+    let vb = {...VB_INIT};
+    let isDragging = false, dragMoved = false, dragStart = null, vbStart = null;
+    let pinchDist = null;
+
+    function applyVB(){ svgEl.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+
+    function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+
+    function zoomAt(factor, clientX, clientY){
+      const rect = svgEl.getBoundingClientRect();
+      const px = (clientX - rect.left) / rect.width;
+      const py = (clientY - rect.top) / rect.height;
+      const newW = clamp(vb.w * factor, VB_INIT.w * 0.06, VB_INIT.w);
+      const newH = clamp(vb.h * factor, VB_INIT.h * 0.06, VB_INIT.h);
+      vb.x = vb.x + px * (vb.w - newW);
+      vb.y = vb.y + py * (vb.h - newH);
+      vb.w = newW; vb.h = newH;
+      applyVB();
+    }
+
+    function zoomFromCenter(factor){
+      const rect = svgEl.getBoundingClientRect();
+      zoomAt(factor, rect.left + rect.width/2, rect.top + rect.height/2);
+    }
+
+    document.getElementById('zoomInBtn').onclick = ()=> zoomFromCenter(0.75);
+    document.getElementById('zoomOutBtn').onclick = ()=> zoomFromCenter(1.34);
+    document.getElementById('zoomResetBtn').onclick = ()=>{ vb = {...VB_INIT}; applyVB(); };
+
+    svgEl.addEventListener('wheel', (e)=>{
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 0.9 : 1.1;
+      zoomAt(factor, e.clientX, e.clientY);
+    }, {passive:false});
+
+    // Empêche qu'un glisser-déposer soit interprété comme un clic sur un département
+    svgEl.addEventListener('click', (e)=>{
+      if(dragMoved){ e.stopPropagation(); dragMoved = false; }
+    }, true);
+
+    // Souris
+    svgEl.addEventListener('mousedown', (e)=>{
+      isDragging = true; dragMoved = false;
+      svgEl.classList.add('dragging');
+      dragStart = {x:e.clientX, y:e.clientY};
+      vbStart = {...vb};
+    });
+    window.addEventListener('mousemove', (e)=>{
+      if(!isDragging) return;
+      const rect = svgEl.getBoundingClientRect();
+      const dx = (e.clientX - dragStart.x) * (vb.w / rect.width);
+      const dy = (e.clientY - dragStart.y) * (vb.h / rect.height);
+      if(Math.abs(e.clientX - dragStart.x) > 3 || Math.abs(e.clientY - dragStart.y) > 3) dragMoved = true;
+      vb.x = vbStart.x - dx; vb.y = vbStart.y - dy;
+      applyVB();
+    });
+    window.addEventListener('mouseup', ()=>{ isDragging = false; svgEl.classList.remove('dragging'); });
+
+    // Tactile (glisser à un doigt, pincer à deux doigts pour zoomer)
+    function touchDist(t){ const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.hypot(dx,dy); }
+
+    svgEl.addEventListener('touchstart', (e)=>{
+      if(e.touches.length === 1){
+        isDragging = true; dragMoved = false;
+        dragStart = {x:e.touches[0].clientX, y:e.touches[0].clientY};
+        vbStart = {...vb};
+      } else if(e.touches.length === 2){
+        isDragging = false;
+        pinchDist = touchDist(e.touches);
+        vbStart = {...vb};
+      }
+    }, {passive:true});
+
+    svgEl.addEventListener('touchmove', (e)=>{
+      if(e.touches.length === 1 && isDragging){
+        e.preventDefault();
+        const rect = svgEl.getBoundingClientRect();
+        const dx = (e.touches[0].clientX - dragStart.x) * (vb.w / rect.width);
+        const dy = (e.touches[0].clientY - dragStart.y) * (vb.h / rect.height);
+        if(Math.abs(e.touches[0].clientX - dragStart.x) > 3 || Math.abs(e.touches[0].clientY - dragStart.y) > 3) dragMoved = true;
+        vb.x = vbStart.x - dx; vb.y = vbStart.y - dy;
+        applyVB();
+      } else if(e.touches.length === 2){
+        e.preventDefault();
+        const dist = touchDist(e.touches);
+        const factor = pinchDist / dist;
+        const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        vb = {...vbStart};
+        zoomAt(factor, cx, cy);
+        pinchDist = dist; vbStart = {...vb};
+      }
+    }, {passive:false});
+
+    svgEl.addEventListener('touchend', ()=>{ isDragging = false; });
+  })();
 })();
 </script>
 </body>
