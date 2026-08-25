@@ -186,6 +186,12 @@
   .btn-invade:active{transform:translateY(1px);}
   .rc-hint{font-size:10.5px;color:var(--muted);}
   #regionCard.placeholder{color:var(--muted);font-size:12px;text-align:center;padding:14px 10px;}
+  .dept-history{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;}
+  .dept-history h4{
+    margin:0 0 8px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;
+    color:var(--muted);font-weight:400;text-transform:uppercase;
+  }
+  .dept-history-list{max-height:220px;overflow-y:auto;}
 
   /* ---------- Claim modal ---------- */
   .overlay{
@@ -690,6 +696,15 @@
     }catch(e){ return null; }
   }
 
+  function faviconUrl(hostname){
+    return `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(hostname)}`;
+  }
+  function hostnameOf(url){
+    const safe = safeUrl(url);
+    if(!safe) return null;
+    try{ return new URL(safe).hostname.replace(/^www\./,''); }catch(e){ return null; }
+  }
+
   function renderIcons(){
     const layer = document.getElementById('icons-layer');
     if(!layer) return;
@@ -701,12 +716,12 @@
       if(!safe) return;
       const c = getCentroid(code);
       if(!c) return;
-      let hostname;
-      try{ hostname = new URL(safe).hostname.replace(/^www\./,''); }catch(e){ return; }
+      const hostname = hostnameOf(s.owner_url);
+      if(!hostname) return;
       const size = Math.max(6, Math.min(c.w, c.h, 15));
       const imgX = c.cx - size/2;
       const imgY = c.cy - size/2 - 1.5;
-      const favicon = `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(hostname)}`;
+      const favicon = faviconUrl(hostname);
       const label = hostname.length > 15 ? hostname.slice(0,14) + '…' : hostname;
       html += `
         <a href="${safe}" xlink:href="${safe}" target="_blank" rel="noopener noreferrer nofollow">
@@ -742,8 +757,49 @@
       <div class="rc-actions">
         <button class="btn-invade" id="btnOpenInvade" style="width:100%;">⚔ ENVAHIR ${DEPT_NAMES[code].toUpperCase()} POUR ${fmt(s.price)}</button>
       </div>
+      <div class="dept-history">
+        <h4>Historique des invasions</h4>
+        <div id="deptHistoryList" class="dept-history-list">
+          <div class="empty-msg">Chargement…</div>
+        </div>
+      </div>
     `;
     document.getElementById('btnOpenInvade').onclick = ()=> openModal(code);
+    loadDeptHistory(code);
+  }
+
+  async function loadDeptHistory(code){
+    const el = document.getElementById('deptHistoryList');
+    if(!el) return;
+    const { data, error } = await sb.from('feed').select('*').eq('code', code).order('ts', {ascending:false});
+    // Le département a pu changer entre-temps (clic rapide sur un autre) : on vérifie
+    if(selected !== code) return;
+    if(error || !data || data.length === 0){
+      el.innerHTML = '<div class="empty-msg">Aucune invasion pour le moment. Sois le·la premier·ère !</div>';
+      return;
+    }
+    el.innerHTML = data.map((f,i)=>{
+      const hostname = hostnameOf(f.owner_url);
+      const icon = hostname
+        ? `<img src="${faviconUrl(hostname)}" width="16" height="16" style="border-radius:3px;flex-shrink:0;" alt="">`
+        : `<span style="width:16px;height:16px;flex-shrink:0;"></span>`;
+      return `
+        <div class="report-row">
+          <div class="left" style="display:flex;align-items:center;gap:8px;">
+            ${i===0 ? '<span title="Propriétaire actuel">👑</span>' : ''}
+            ${icon}
+            <div>
+              <div class="who">${linkName(f.name, f.owner_url)}</div>
+              ${hostname ? `<div class="what">${escapeHtml(hostname)}</div>` : ''}
+            </div>
+          </div>
+          <div class="right">
+            <div class="amt">${fmt(f.price)}</div>
+            <div class="when">${timeAgo(f.ts)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function renderFeed(){
