@@ -79,6 +79,16 @@
     .grid{grid-template-columns:1fr;}
     .grid > .map-panel{order:-1;}
   }
+  @media (max-width:700px){
+    .topbar{
+      position:relative;flex-direction:column;align-items:center;
+      gap:8px;padding:30px 14px 12px;
+    }
+    .brand{margin-right:0;}
+    .stats-center{width:100%;justify-content:center;gap:14px;}
+    .right-group{position:absolute;top:8px;right:10px;}
+    .right-group .demo-pill{font-size:9px;padding:4px 8px;}
+  }
 
   .panel{
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
@@ -781,7 +791,7 @@
   function renderHotList(){
     const el = document.getElementById('hotList');
     const list = DEPT_ORDER.map(code=>({code, price:state[code].price, owner:state[code].owner}))
-      .sort((a,b)=>b.price-a.price).slice(0,6);
+      .sort((a,b)=>b.price-a.price).slice(0,5);
     el.innerHTML = list.map(r=>`
       <div class="lb-row" style="cursor:pointer;" onclick="window.__selectRegion('${r.code}')">
         <div class="lb-swatch" style="background:${r.owner ? state[r.code].color : 'var(--unclaimed)'}"></div>
