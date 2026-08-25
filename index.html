@@ -367,7 +367,7 @@
       <div class="panel">
         <h2>ℹ️ Règles</h2>
         <div style="font-size:11.5px;color:var(--muted);line-height:1.7;">
-          Chaque région part à son prix de base. Clique <b style="color:var(--text);">ENVAHIR</b>, indique ton nom (ou celui de ton site) et confirme : tu deviens propriétaire et le prix grimpe de <b style="color:var(--text);">+40%</b> pour le prochain envahisseur. Le classement des puissances compte le nombre de régions détenues, puis le total dépensé.
+          Chaque région part à son prix de base. Clique <b style="color:var(--text);">ENVAHIR</b>, indique ton nom (ou celui de ton site) et confirme : tu deviens propriétaire et le prix grimpe de <b style="color:var(--text);">+40%</b> pour le prochain envahisseur. Le classement des puissances compte le nombre de régions détenues, puis le total dépensé. <b style="color:var(--text);">Tout le monde voit la même carte en direct.</b>
         </div>
       </div>
     </div>
@@ -375,7 +375,7 @@
   </div>
 
   <footer class="note">
-    Carte des régions basée sur un tracé SVG libre des régions françaises. Prototype non affilié à warmap.lol — les données ne sont pas persistées (tout se réinitialise au rechargement).
+    Carte des régions basée sur un tracé SVG libre des régions françaises. Prototype non affilié à warmap.lol — état partagé en temps réel via Supabase.
   </footer>
 </div>
 
@@ -396,76 +396,90 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 
-  // ---- Region data: code_insee -> nom, base price (approx. pondéré population) ----
-  const REGIONS = {
-    "11": {nom:"Île-de-France",            base:150},
-    "84": {nom:"Auvergne-Rhône-Alpes",     base:95},
-    "76": {nom:"Occitanie",                base:70},
-    "75": {nom:"Nouvelle-Aquitaine",       base:70},
-    "32": {nom:"Hauts-de-France",          base:65},
-    "93": {nom:"Provence-Alpes-Côte d'Azur", base:60},
-    "44": {nom:"Grand Est",                base:60},
-    "52": {nom:"Pays de la Loire",         base:45},
-    "53": {nom:"Bretagne",                 base:40},
-    "28": {nom:"Normandie",                base:38},
-    "27": {nom:"Bourgogne-Franche-Comté",  base:32},
-    "24": {nom:"Centre-Val de Loire",      base:28},
-    "94": {nom:"Corse",                    base:8}
+  // ===========================================================
+  // 1) Colle ici les valeurs de ton projet Supabase
+  //    (Settings -> API dans le dashboard Supabase)
+  // ===========================================================
+  const SUPABASE_URL = "https://TON-PROJET.supabase.co";
+  const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+  // ===========================================================
+
+  const sb = window.supabase.createClient(https://eyigskkmxnfnghtrswqv.supabase.co, sb_publishable_PaxY7OGCVHBSF9TtT0GEVA_pihvKxKo);
+
+  // ---- Static region metadata (nom, code) ; le prix/owner vivent en base ----
+  const REGION_ORDER = ["11","84","76","75","32","93","44","52","53","28","27","24","94"];
+  const REGION_NAMES = {
+    "11":"Île-de-France","84":"Auvergne-Rhône-Alpes","76":"Occitanie","75":"Nouvelle-Aquitaine",
+    "32":"Hauts-de-France","93":"Provence-Alpes-Côte d'Azur","44":"Grand Est","52":"Pays de la Loire",
+    "53":"Bretagne","28":"Normandie","27":"Bourgogne-Franche-Comté","24":"Centre-Val de Loire","94":"Corse"
   };
 
   const OWNER_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff9f43","#8ad1ff","#ff6b6b"];
+  function colorFor(name){
+    // hash déterministe : même nom -> même couleur pour tout le monde, sans coordination
+    let h = 0;
+    for(let i=0;i<name.length;i++){ h = (h*31 + name.charCodeAt(i)) >>> 0; }
+    return OWNER_COLORS[h % OWNER_COLORS.length];
+  }
 
-  // ---- State (in-memory only, resets on reload) ----
-  let state = {};
-  Object.keys(REGIONS).forEach(code=>{
-    state[code] = {owner:null, ownerUrl:null, price:REGIONS[code].base, color:null};
-  });
+  let state = {};       // code -> {owner, owner_url, price, color}
+  REGION_ORDER.forEach(code => state[code] = {owner:null, owner_url:null, price:0, color:null});
   let selected = null;
+  let feed = [];         // [{name, region, price, ts}]
   let clicks = 0;
   let plundered = 0;
   let visitors = 21000 + Math.floor(Math.random()*3000);
   let online = 60 + Math.floor(Math.random()*70);
-  const owners = {}; // name -> {territories, spent, color}
-  const feed = [];
-  let colorIdx = 0;
 
-  function fmt(n){ return "$" + n.toLocaleString("fr-FR"); }
+  function fmt(n){ return "$" + Number(n).toLocaleString("fr-FR"); }
   function timeAgo(ts){
-    const s = Math.floor((Date.now()-ts)/1000);
+    const s = Math.floor((Date.now()-new Date(ts).getTime())/1000);
     if(s < 60) return s+"s";
     const m = Math.floor(s/60);
     if(m < 60) return m+"m";
-    const h = Math.floor(m/60);
-    return h+"h";
+    return Math.floor(m/60)+"h";
   }
-  function colorFor(name){
-    if(owners[name] && owners[name].color) return owners[name].color;
-    const c = OWNER_COLORS[colorIdx % OWNER_COLORS.length];
-    colorIdx++;
-    return c;
+  function escapeHtml(str){
+    const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
   }
 
-  // ---- Rendering ----
+  // ---- Derived data ----
+  function computeOwners(){
+    const owners = {};
+    REGION_ORDER.forEach(code=>{
+      const s = state[code];
+      if(!s.owner) return;
+      if(!owners[s.owner]) owners[s.owner] = {territories:0, spent:0, color:s.color};
+      owners[s.owner].territories += 1;
+    });
+    feed.forEach(f=>{
+      if(!owners[f.name]) owners[f.name] = {territories:0, spent:0, color:colorFor(f.name)};
+      owners[f.name].spent += Number(f.price);
+    });
+    return owners;
+  }
+
+  // ---- Rendering (identique à la version démo) ----
   function renderStats(){
     document.getElementById('statOnline').textContent = online;
     document.getElementById('statVisitors').textContent = visitors.toLocaleString("fr-FR");
     document.getElementById('statPlundered').textContent = fmt(plundered);
     document.getElementById('statClicks').textContent = clicks.toLocaleString("fr-FR");
-    const claimed = Object.values(state).filter(s=>s.owner).length;
+    const claimed = REGION_ORDER.filter(c=>state[c].owner).length;
     document.getElementById('statClaimed').textContent = claimed + "/13";
   }
 
   function renderMap(){
-    Object.keys(REGIONS).forEach(code=>{
+    REGION_ORDER.forEach(code=>{
       const g = document.getElementById('region-'+code);
       if(!g) return;
       const s = state[code];
-      const paths = g.querySelectorAll('path');
       const fill = s.owner ? s.color : getComputedStyle(document.documentElement).getPropertyValue('--unclaimed').trim();
-      paths.forEach(p=> p.style.fill = fill);
+      g.querySelectorAll('path').forEach(p=> p.style.fill = fill);
       g.classList.toggle('selected', selected === code);
     });
   }
@@ -477,14 +491,12 @@
       card.innerHTML = "Sélectionne une région sur la carte pour voir son prix d'invasion.";
       return;
     }
-    const code = selected;
-    const s = state[code];
-    const info = REGIONS[code];
+    const code = selected, s = state[code];
     card.className = '';
     card.innerHTML = `
       <div class="rc-top">
         <div>
-          <h3>${info.nom}</h3>
+          <h3>${REGION_NAMES[code]}</h3>
           <div class="rc-owner">${s.owner ? `détenue par <b style="color:${s.color}">${escapeHtml(s.owner)}</b>` : "non réclamée"}</div>
         </div>
         <div class="rc-price">
@@ -510,7 +522,7 @@
       <div class="report-row ${i===0?'new':''}">
         <div class="left">
           <div class="who">${escapeHtml(f.name)}</div>
-          <div class="what">a conquis ${f.region}</div>
+          <div class="what">a conquis ${escapeHtml(f.region)}</div>
         </div>
         <div class="right">
           <div class="amt">${fmt(f.price)}</div>
@@ -522,6 +534,7 @@
 
   function renderLeaderboard(){
     const el = document.getElementById('leaderboard');
+    const owners = computeOwners();
     const list = Object.entries(owners).sort((a,b)=>{
       if(b[1].territories !== a[1].territories) return b[1].territories - a[1].territories;
       return b[1].spent - a[1].spent;
@@ -542,21 +555,15 @@
 
   function renderHotList(){
     const el = document.getElementById('hotList');
-    const list = Object.keys(REGIONS).map(code=>({code, price:state[code].price, nom:REGIONS[code].nom, owner:state[code].owner}))
+    const list = REGION_ORDER.map(code=>({code, price:state[code].price, owner:state[code].owner}))
       .sort((a,b)=>b.price-a.price).slice(0,6);
     el.innerHTML = list.map(r=>`
       <div class="lb-row" style="cursor:pointer;" onclick="window.__selectRegion('${r.code}')">
         <div class="lb-swatch" style="background:${r.owner ? state[r.code].color : 'var(--unclaimed)'}"></div>
-        <div class="lb-name">${r.nom}</div>
+        <div class="lb-name">${REGION_NAMES[r.code]}</div>
         <div class="lb-meta"><b>${fmt(r.price)}</b><span>${r.owner ? 'réclamée' : 'libre'}</span></div>
       </div>
     `).join('');
-  }
-
-  function escapeHtml(str){
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
   }
 
   function renderAll(){
@@ -569,7 +576,6 @@
     renderMap(); renderRegionCard();
     document.getElementById('regionCard').scrollIntoView({behavior:'smooth', block:'nearest'});
   };
-
   document.querySelectorAll('.region').forEach(g=>{
     const code = g.id.replace('region-','');
     g.addEventListener('click', ()=> window.__selectRegion(code));
@@ -578,62 +584,89 @@
   function openModal(code){
     selected = code;
     const s = state[code];
-    const info = REGIONS[code];
-    document.getElementById('modalTitle').textContent = 'Envahir — ' + info.nom;
+    document.getElementById('modalTitle').textContent = 'Envahir — ' + REGION_NAMES[code];
     document.getElementById('modalPrice').textContent = fmt(s.price);
     document.getElementById('inpName').value = '';
     document.getElementById('inpUrl').value = '';
     document.getElementById('overlay').classList.add('open');
     setTimeout(()=> document.getElementById('inpName').focus(), 50);
   }
-  function closeModal(){
-    document.getElementById('overlay').classList.remove('open');
-  }
+  function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
   document.getElementById('btnCancel').onclick = closeModal;
-  document.getElementById('overlay').addEventListener('click', (e)=>{
-    if(e.target.id === 'overlay') closeModal();
-  });
+  document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeModal(); });
 
-  document.getElementById('btnConfirm').onclick = function(){
+  document.getElementById('btnConfirm').onclick = async function(){
     const code = selected;
     if(!code) return;
-    let name = document.getElementById('inpName').value.trim();
-    if(!name) name = 'Anonyme';
+    let name = document.getElementById('inpName').value.trim() || 'Anonyme';
     name = name.slice(0,40);
+    const url = document.getElementById('inpUrl').value.trim().slice(0,200) || null;
+    const color = colorFor(name);
 
-    const s = state[code];
-    const info = REGIONS[code];
-    const price = s.price;
+    const btn = document.getElementById('btnConfirm');
+    btn.disabled = true; btn.textContent = "…";
 
-    if(!owners[name]) owners[name] = {territories:0, spent:0, color: colorFor(name)};
-    // if this region already had an owner, decrement their count
-    if(s.owner && owners[s.owner]){
-      owners[s.owner].territories = Math.max(0, owners[s.owner].territories - 1);
+    const { error } = await sb.rpc('invade_region', {
+      p_code: code, p_name: name, p_url: url, p_color: color
+    });
+
+    btn.disabled = false; btn.textContent = "Confirmer l'invasion";
+
+    if(error){
+      alert("Cette région vient peut-être d'être envahie par quelqu'un d'autre, ou la connexion a échoué. Réessaie.");
+      console.error(error);
+      return;
     }
-
-    s.owner = name;
-    s.color = owners[name].color;
-    owners[name].territories += 1;
-    owners[name].spent += price;
-
-    plundered += price;
-    clicks += 1;
-    s.price = Math.ceil(price * 1.4 / 1) ; // +40% for next invader
-
-    feed.unshift({name, region: info.nom, price, ts: Date.now()});
-
+    // Le state se met à jour tout seul via Realtime (voir plus bas)
     closeModal();
-    renderAll();
   };
 
-  // ---- Ambient "live" ticking so the top bar feels alive ----
+  // ---- Chargement initial depuis Supabase ----
+  async function loadInitial(){
+    const { data: regionsData, error: e1 } = await sb.from('regions').select('*');
+    if(e1){ console.error(e1); return; }
+    regionsData.forEach(r=>{
+      state[r.code] = { owner:r.owner, owner_url:r.owner_url, price:Number(r.price), color:r.color };
+    });
+
+    const { data: feedData, error: e2 } = await sb.from('feed').select('*').order('ts', {ascending:false}).limit(30);
+    if(!e2 && feedData){
+      feed = feedData.map(f=>({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts}));
+      plundered = feed.reduce((sum,f)=>sum+f.price, 0);
+      clicks = feed.length;
+    }
+    renderAll();
+  }
+
+  // ---- Temps réel : tout le monde voit les mêmes changements ----
+  function subscribeRealtime(){
+    sb.channel('public:regions')
+      .on('postgres_changes', {event:'UPDATE', schema:'public', table:'regions'}, payload=>{
+        const r = payload.new;
+        state[r.code] = { owner:r.owner, owner_url:r.owner_url, price:Number(r.price), color:r.color };
+        renderAll();
+      })
+      .subscribe();
+
+    sb.channel('public:feed')
+      .on('postgres_changes', {event:'INSERT', schema:'public', table:'feed'}, payload=>{
+        const f = payload.new;
+        feed.unshift({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts});
+        plundered += Number(f.price);
+        clicks += 1;
+        renderAll();
+      })
+      .subscribe();
+  }
+
   setInterval(()=>{
     online = Math.max(40, online + Math.floor(Math.random()*7 - 3));
     visitors += Math.floor(Math.random()*3);
     renderStats();
   }, 4000);
 
-  renderAll();
+  loadInitial();
+  subscribeRealtime();
 })();
 </script>
 </body>
