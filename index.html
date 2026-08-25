@@ -62,7 +62,10 @@
 
   /* ---------- Layout ---------- */
   .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:14px;align-items:start;}
-  @media (max-width:1100px){ .grid{grid-template-columns:1fr;} }
+  @media (max-width:1100px){
+    .grid{grid-template-columns:1fr;}
+    .grid > .map-panel{order:-1;}
+  }
 
   .panel{
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
@@ -205,7 +208,7 @@
     <div class="tag" style="margin-right:10px;">La carte de France à conquérir</div>
     <div class="stat live"><b><span class="dot"></span><span id="statOnline">1</span></b><span>en ligne</span></div>
     <div class="stat"><b id="statVisitors">0</b><span>visiteurs</span></div>
-    <div class="stat money"><b id="statPlundered">$0</b><span>pillés</span></div>
+    <div class="stat money"><b id="statPlundered">0 €</b><span>pillés</span></div>
     <div class="stat"><b id="statClicks">0</b><span>clics</span></div>
     <div class="stat"><b id="statClaimed">0/96</b><span>revendiquées</span></div>
     <div class="spacer"></div>
@@ -231,7 +234,7 @@
       <div class="map-head">
         <div>
           <h1>France — 96 départements</h1>
-          <div class="sub">Clique un département pour l'envahir</div>
+          <div class="sub">Clique sur département pour l'envahir</div>
         </div>
         <div class="legend">
           <span><span class="sw" style="background:var(--unclaimed);"></span>non réclamée</span>
@@ -405,7 +408,7 @@
       <input id="inpColor" type="color" value="#ff7a29" style="width:46px;height:34px;padding:2px;background:#0c0e13;border:1px solid var(--border);border-radius:7px;cursor:pointer;">
       <span class="rc-hint">Choisis la couleur qui remplira ce département sur la carte.</span>
     </div>
-    <div class="price-line">Prix de l'invasion : <b id="modalPrice">$0</b></div>
+    <div class="price-line">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="btnCancel">Annuler</button>
       <button class="btn-invade" id="btnConfirm">Confirmer l'invasion</button>
@@ -430,102 +433,102 @@
   // ---- Static department metadata (nom, base) ; le prix/owner vivent en base ----
   const DEPT_ORDER = ["75","77","78","91","92","93","94","95","18","28","36","37","41","45","21","25","39","58","70","71","89","90","14","27","50","61","76","02","59","60","62","80","08","10","51","52","54","55","57","67","68","88","44","49","53","72","85","22","29","35","56","16","17","19","23","24","33","40","47","64","79","86","87","09","11","12","30","31","32","34","46","48","65","66","81","82","01","03","07","15","26","38","42","43","63","69","73","74","04","05","06","13","83","84","2A","2B"];
   const DEPARTMENTS = {
-    "75":{nom:"Paris",base:26},
-    "77":{nom:"Seine-et-Marne",base:26},
-    "78":{nom:"Yvelines",base:26},
-    "91":{nom:"Essonne",base:27},
-    "92":{nom:"Hauts-de-Seine",base:27},
-    "93":{nom:"Seine-Saint-Denis",base:27},
-    "94":{nom:"Val-de-Marne",base:27},
-    "95":{nom:"Val-d’Oise",base:27},
-    "18":{nom:"Cher",base:6},
-    "28":{nom:"Eure-et-Loir",base:6},
-    "36":{nom:"Indre",base:6},
-    "37":{nom:"Indre-et-Loire",base:6},
-    "41":{nom:"Loir-et-Cher",base:6},
-    "45":{nom:"Loiret",base:6},
-    "21":{nom:"Côte-d’Or",base:5},
-    "25":{nom:"Doubs",base:5},
-    "39":{nom:"Jura",base:5},
-    "58":{nom:"Nièvre",base:5},
-    "70":{nom:"Haute-Saône",base:6},
-    "71":{nom:"Saône-et-Loire",base:6},
-    "89":{nom:"Yonne",base:6},
-    "90":{nom:"Territoire de Belfort",base:6},
-    "14":{nom:"Calvados",base:9},
-    "27":{nom:"Eure",base:9},
-    "50":{nom:"Manche",base:10},
-    "61":{nom:"Orne",base:10},
-    "76":{nom:"Seine-Maritime",base:11},
-    "02":{nom:"Aisne",base:15},
-    "59":{nom:"Nord",base:17},
-    "60":{nom:"Oise",base:18},
-    "62":{nom:"Pas-de-Calais",base:18},
-    "80":{nom:"Somme",base:18},
-    "08":{nom:"Ardennes",base:7},
-    "10":{nom:"Aube",base:7},
-    "51":{nom:"Marne",base:8},
-    "52":{nom:"Haute-Marne",base:8},
-    "54":{nom:"Meurthe-et-Moselle",base:8},
-    "55":{nom:"Meuse",base:8},
-    "57":{nom:"Moselle",base:8},
-    "67":{nom:"Bas-Rhin",base:8},
-    "68":{nom:"Haut-Rhin",base:8},
-    "88":{nom:"Vosges",base:8},
-    "44":{nom:"Loire-Atlantique",base:12},
-    "49":{nom:"Maine-et-Loire",base:12},
-    "53":{nom:"Mayenne",base:12},
-    "72":{nom:"Sarthe",base:12},
-    "85":{nom:"Vendée",base:13},
-    "22":{nom:"Côtes-d’Armor",base:12},
-    "29":{nom:"Finistère",base:12},
-    "35":{nom:"Ille-et-Vilaine",base:13},
-    "56":{nom:"Morbihan",base:13},
-    "16":{nom:"Charente",base:7},
-    "17":{nom:"Charente-Maritime",base:7},
-    "19":{nom:"Corrèze",base:7},
-    "23":{nom:"Creuse",base:7},
-    "24":{nom:"Dordogne",base:7},
-    "33":{nom:"Gironde",base:7},
-    "40":{nom:"Landes",base:8},
-    "47":{nom:"Lot-et-Garonne",base:8},
-    "64":{nom:"Pyrénées-Atlantiques",base:8},
-    "79":{nom:"Deux-Sèvres",base:8},
-    "86":{nom:"Vienne",base:8},
-    "87":{nom:"Haute-Vienne",base:8},
-    "09":{nom:"Ariège",base:6},
-    "11":{nom:"Aude",base:7},
-    "12":{nom:"Aveyron",base:7},
-    "30":{nom:"Gard",base:7},
-    "31":{nom:"Haute-Garonne",base:7},
-    "32":{nom:"Gers",base:7},
-    "34":{nom:"Hérault",base:7},
-    "46":{nom:"Lot",base:7},
-    "48":{nom:"Lozère",base:7},
-    "65":{nom:"Hautes-Pyrénées",base:7},
-    "66":{nom:"Pyrénées-Orientales",base:7},
-    "81":{nom:"Tarn",base:8},
-    "82":{nom:"Tarn-et-Garonne",base:8},
-    "01":{nom:"Ain",base:9},
-    "03":{nom:"Allier",base:9},
-    "07":{nom:"Ardèche",base:9},
-    "15":{nom:"Cantal",base:10},
-    "26":{nom:"Drôme",base:10},
-    "38":{nom:"Isère",base:10},
-    "42":{nom:"Loire",base:10},
-    "43":{nom:"Haute-Loire",base:10},
-    "63":{nom:"Puy-de-Dôme",base:11},
-    "69":{nom:"Rhône",base:11},
-    "73":{nom:"Savoie",base:11},
-    "74":{nom:"Haute-Savoie",base:11},
-    "04":{nom:"Alpes-de-Haute-Provence",base:12},
-    "05":{nom:"Hautes-Alpes",base:12},
-    "06":{nom:"Alpes-Maritimes",base:12},
-    "13":{nom:"Bouches-du-Rhône",base:12},
-    "83":{nom:"Var",base:14},
-    "84":{nom:"Vaucluse",base:14},
-    "2A":{nom:"Corse-du-Sud",base:5},
-    "2B":{nom:"Haute-Corse",base:5}
+    "75":{nom:"Paris",base:9.5},
+    "77":{nom:"Seine-et-Marne",base:9.5},
+    "78":{nom:"Yvelines",base:9.5},
+    "91":{nom:"Essonne",base:10.0},
+    "92":{nom:"Hauts-de-Seine",base:10.0},
+    "93":{nom:"Seine-Saint-Denis",base:10.0},
+    "94":{nom:"Val-de-Marne",base:10.0},
+    "95":{nom:"Val-d’Oise",base:10.0},
+    "18":{nom:"Cher",base:1.5},
+    "28":{nom:"Eure-et-Loir",base:1.5},
+    "36":{nom:"Indre",base:1.5},
+    "37":{nom:"Indre-et-Loire",base:1.5},
+    "41":{nom:"Loir-et-Cher",base:1.5},
+    "45":{nom:"Loiret",base:1.5},
+    "21":{nom:"Côte-d’Or",base:1.0},
+    "25":{nom:"Doubs",base:1.0},
+    "39":{nom:"Jura",base:1.0},
+    "58":{nom:"Nièvre",base:1.0},
+    "70":{nom:"Haute-Saône",base:1.0},
+    "71":{nom:"Saône-et-Loire",base:1.0},
+    "89":{nom:"Yonne",base:1.5},
+    "90":{nom:"Territoire de Belfort",base:1.5},
+    "14":{nom:"Calvados",base:2.5},
+    "27":{nom:"Eure",base:3.0},
+    "50":{nom:"Manche",base:3.0},
+    "61":{nom:"Orne",base:3.0},
+    "76":{nom:"Seine-Maritime",base:3.5},
+    "02":{nom:"Aisne",base:5.5},
+    "59":{nom:"Nord",base:6.0},
+    "60":{nom:"Oise",base:6.0},
+    "62":{nom:"Pas-de-Calais",base:6.0},
+    "80":{nom:"Somme",base:6.5},
+    "08":{nom:"Ardennes",base:2.0},
+    "10":{nom:"Aube",base:2.0},
+    "51":{nom:"Marne",base:2.0},
+    "52":{nom:"Haute-Marne",base:2.0},
+    "54":{nom:"Meurthe-et-Moselle",base:2.0},
+    "55":{nom:"Meuse",base:2.0},
+    "57":{nom:"Moselle",base:2.0},
+    "67":{nom:"Bas-Rhin",base:2.5},
+    "68":{nom:"Haut-Rhin",base:2.5},
+    "88":{nom:"Vosges",base:2.5},
+    "44":{nom:"Loire-Atlantique",base:3.5},
+    "49":{nom:"Maine-et-Loire",base:4.0},
+    "53":{nom:"Mayenne",base:4.0},
+    "72":{nom:"Sarthe",base:4.0},
+    "85":{nom:"Vendée",base:4.0},
+    "22":{nom:"Côtes-d’Armor",base:4.0},
+    "29":{nom:"Finistère",base:4.0},
+    "35":{nom:"Ille-et-Vilaine",base:4.0},
+    "56":{nom:"Morbihan",base:4.5},
+    "16":{nom:"Charente",base:2.0},
+    "17":{nom:"Charente-Maritime",base:2.0},
+    "19":{nom:"Corrèze",base:2.0},
+    "23":{nom:"Creuse",base:2.0},
+    "24":{nom:"Dordogne",base:2.0},
+    "33":{nom:"Gironde",base:2.0},
+    "40":{nom:"Landes",base:2.0},
+    "47":{nom:"Lot-et-Garonne",base:2.0},
+    "64":{nom:"Pyrénées-Atlantiques",base:2.0},
+    "79":{nom:"Deux-Sèvres",base:2.5},
+    "86":{nom:"Vienne",base:2.5},
+    "87":{nom:"Haute-Vienne",base:2.5},
+    "09":{nom:"Ariège",base:1.5},
+    "11":{nom:"Aude",base:1.5},
+    "12":{nom:"Aveyron",base:1.5},
+    "30":{nom:"Gard",base:2.0},
+    "31":{nom:"Haute-Garonne",base:2.0},
+    "32":{nom:"Gers",base:2.0},
+    "34":{nom:"Hérault",base:2.0},
+    "46":{nom:"Lot",base:2.0},
+    "48":{nom:"Lozère",base:2.0},
+    "65":{nom:"Hautes-Pyrénées",base:2.0},
+    "66":{nom:"Pyrénées-Orientales",base:2.0},
+    "81":{nom:"Tarn",base:2.0},
+    "82":{nom:"Tarn-et-Garonne",base:2.0},
+    "01":{nom:"Ain",base:3.0},
+    "03":{nom:"Allier",base:3.0},
+    "07":{nom:"Ardèche",base:3.0},
+    "15":{nom:"Cantal",base:3.0},
+    "26":{nom:"Drôme",base:3.0},
+    "38":{nom:"Isère",base:3.0},
+    "42":{nom:"Loire",base:3.0},
+    "43":{nom:"Haute-Loire",base:3.0},
+    "63":{nom:"Puy-de-Dôme",base:3.5},
+    "69":{nom:"Rhône",base:3.5},
+    "73":{nom:"Savoie",base:3.5},
+    "74":{nom:"Haute-Savoie",base:3.5},
+    "04":{nom:"Alpes-de-Haute-Provence",base:4.0},
+    "05":{nom:"Hautes-Alpes",base:4.0},
+    "06":{nom:"Alpes-Maritimes",base:4.0},
+    "13":{nom:"Bouches-du-Rhône",base:4.0},
+    "83":{nom:"Var",base:4.5},
+    "84":{nom:"Vaucluse",base:4.5},
+    "2A":{nom:"Corse-du-Sud",base:1.0},
+    "2B":{nom:"Haute-Corse",base:1.0}
   };
   const DEPT_NAMES = {};
   DEPT_ORDER.forEach(c => DEPT_NAMES[c] = DEPARTMENTS[c].nom);
@@ -547,7 +550,7 @@
   let visitors = 0;   // vrai total, vient de la table stats
   let online = 1;     // vrai nombre de visiteurs connectés, via Presence Supabase
 
-  function fmt(n){ return "$" + Number(n).toLocaleString("fr-FR"); }
+  function fmt(n){ return Number(n).toLocaleString("fr-FR", {maximumFractionDigits:1}) + " €"; }
   function timeAgo(ts){
     const s = Math.floor((Date.now()-new Date(ts).getTime())/1000);
     if(s < 60) return s+"s";
