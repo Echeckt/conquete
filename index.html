@@ -404,11 +404,11 @@
   // 1) Colle ici les valeurs de ton projet Supabase
   //    (Settings -> API dans le dashboard Supabase)
   // ===========================================================
-  const SUPABASE_URL = "https://TON-PROJET.supabase.co";
-  const SUPABASE_ANON_KEY = "TA_CLE_ANON_PUBLIC";
+  const SUPABASE_URL = "https://eyigskkmxnfnghtrswqv.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_PaxY7OGCVHBSF9TtT0GEVA_pihvKxKo";
   // ===========================================================
 
-  const sb = window.supabase.createClient(https://eyigskkmxnfnghtrswqv.supabase.co, sb_publishable_PaxY7OGCVHBSF9TtT0GEVA_pihvKxKo);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ---- Static region metadata (nom, code) ; le prix/owner vivent en base ----
   const REGION_ORDER = ["11","84","76","75","32","93","44","52","53","28","27","24","94"];
@@ -540,7 +540,7 @@
       return b[1].spent - a[1].spent;
     });
     if(list.length === 0){
-      el.innerHTML = '<div class="empty-msg">Aucune puissance mondiale pour l\\'instant.</div>';
+      el.innerHTML = '<div class="empty-msg">Aucune puissance mondiale pour l\u2019instant.</div>';
       return;
     }
     el.innerHTML = list.slice(0,10).map(([name,o],i)=>`
