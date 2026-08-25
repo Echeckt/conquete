@@ -200,7 +200,7 @@
     <div class="stat"><b id="statClicks">0</b><span>clics</span></div>
     <div class="stat"><b id="statClaimed">0/13</b><span>revendiquées</span></div>
     <div class="spacer"></div>
-    <div class="demo-pill">démo — sans backend</div>
+    <div class="demo-pill"><span class="dot"></span>en direct — multijoueur</div>
   </div>
 
   <div class="grid">
@@ -386,8 +386,9 @@
     <div class="modal-sub">Deviens le/la propriétaire de cette région.</div>
     <label for="inpName">Ton nom / ton site</label>
     <input id="inpName" type="text" placeholder="ex : MonSite.fr" maxlength="40">
-    <label for="inpUrl">Lien (optionnel)</label>
+    <label for="inpUrl">Lien de ton site (backlink, optionnel)</label>
     <input id="inpUrl" type="text" placeholder="https://monsite.fr">
+    <div class="rc-hint" style="margin-top:4px;">Si tu le remplis, ton nom deviendra cliquable partout sur la carte et ouvrira ce lien dans un nouvel onglet.</div>
     <div class="price-line">Prix de l'invasion : <b id="modalPrice">$0</b></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="btnCancel">Annuler</button>
@@ -432,8 +433,8 @@
   let feed = [];         // [{name, region, price, ts}]
   let clicks = 0;
   let plundered = 0;
-  let visitors = 21000 + Math.floor(Math.random()*3000);
-  let online = 60 + Math.floor(Math.random()*70);
+  let visitors = 0;   // vrai total, vient de la table stats
+  let online = 1;     // vrai nombre de visiteurs connectés, via Presence Supabase
 
   function fmt(n){ return "$" + Number(n).toLocaleString("fr-FR"); }
   function timeAgo(ts){
@@ -446,6 +447,21 @@
   function escapeHtml(str){
     const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
   }
+  function safeUrl(u){
+    if(!u) return null;
+    try{
+      const withProto = /^https?:\/\//i.test(u) ? u : 'https://' + u;
+      const parsed = new URL(withProto);
+      return parsed.href;
+    }catch(e){ return null; }
+  }
+  // Rend un nom cliquable (ouvre le lien dans un nouvel onglet) s'il a fourni une URL
+  function linkName(name, url, extraStyle){
+    const safe = safeUrl(url);
+    const style = extraStyle || '';
+    if(!safe) return `<span style="${style}">${escapeHtml(name)}</span>`;
+    return `<a href="${safe}" target="_blank" rel="noopener noreferrer nofollow" style="${style}text-decoration:none;border-bottom:1px dotted currentColor;" title="${escapeHtml(safe)}">${escapeHtml(name)} ↗</a>`;
+  }
 
   // ---- Derived data ----
   function computeOwners(){
@@ -453,17 +469,19 @@
     REGION_ORDER.forEach(code=>{
       const s = state[code];
       if(!s.owner) return;
-      if(!owners[s.owner]) owners[s.owner] = {territories:0, spent:0, color:s.color};
+      if(!owners[s.owner]) owners[s.owner] = {territories:0, spent:0, color:s.color, url:null};
       owners[s.owner].territories += 1;
+      if(s.owner_url) owners[s.owner].url = s.owner_url;
     });
     feed.forEach(f=>{
-      if(!owners[f.name]) owners[f.name] = {territories:0, spent:0, color:colorFor(f.name)};
+      if(!owners[f.name]) owners[f.name] = {territories:0, spent:0, color:colorFor(f.name), url:null};
       owners[f.name].spent += Number(f.price);
+      if(!owners[f.name].url && f.owner_url) owners[f.name].url = f.owner_url;
     });
     return owners;
   }
 
-  // ---- Rendering (identique à la version démo) ----
+  // ---- Rendering ----
   function renderStats(){
     document.getElementById('statOnline').textContent = online;
     document.getElementById('statVisitors').textContent = visitors.toLocaleString("fr-FR");
@@ -497,7 +515,7 @@
       <div class="rc-top">
         <div>
           <h3>${REGION_NAMES[code]}</h3>
-          <div class="rc-owner">${s.owner ? `détenue par <b style="color:${s.color}">${escapeHtml(s.owner)}</b>` : "non réclamée"}</div>
+          <div class="rc-owner">${s.owner ? `détenue par <b style="color:${s.color}">${linkName(s.owner, s.owner_url)}</b>` : "non réclamée"}</div>
         </div>
         <div class="rc-price">
           <span class="amt">${fmt(s.price)}</span>
@@ -521,7 +539,7 @@
     el.innerHTML = feed.slice(0,25).map((f,i)=>`
       <div class="report-row ${i===0?'new':''}">
         <div class="left">
-          <div class="who">${escapeHtml(f.name)}</div>
+          <div class="who">${linkName(f.name, f.owner_url)}</div>
           <div class="what">a conquis ${escapeHtml(f.region)}</div>
         </div>
         <div class="right">
@@ -547,7 +565,7 @@
       <div class="lb-row">
         <div class="lb-rank ${i===0?'gold':''}">${i===0?'👑':(i+1)}</div>
         <div class="lb-swatch" style="background:${o.color}"></div>
-        <div class="lb-name">${escapeHtml(name)}</div>
+        <div class="lb-name">${linkName(name, o.url)}</div>
         <div class="lb-meta"><b>${fmt(o.spent)}</b><span>${o.territories} région${o.territories>1?'s':''}</span></div>
       </div>
     `).join('');
@@ -631,10 +649,15 @@
 
     const { data: feedData, error: e2 } = await sb.from('feed').select('*').order('ts', {ascending:false}).limit(30);
     if(!e2 && feedData){
-      feed = feedData.map(f=>({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts}));
+      feed = feedData.map(f=>({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts, owner_url:f.owner_url}));
       plundered = feed.reduce((sum,f)=>sum+f.price, 0);
       clicks = feed.length;
     }
+
+    // Compteur de visites réel : +1 à chaque chargement de page, valeur partagée par tous
+    const { data: v, error: e3 } = await sb.rpc('increment_visitors');
+    if(!e3 && v !== null){ visitors = Number(v); }
+
     renderAll();
   }
 
@@ -651,19 +674,35 @@
     sb.channel('public:feed')
       .on('postgres_changes', {event:'INSERT', schema:'public', table:'feed'}, payload=>{
         const f = payload.new;
-        feed.unshift({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts});
+        feed.unshift({name:f.name, region:f.nom, price:Number(f.price), ts:f.ts, owner_url:f.owner_url});
         plundered += Number(f.price);
         clicks += 1;
         renderAll();
       })
       .subscribe();
-  }
 
-  setInterval(()=>{
-    online = Math.max(40, online + Math.floor(Math.random()*7 - 3));
-    visitors += Math.floor(Math.random()*3);
-    renderStats();
-  }, 4000);
+    // Compteur de visites : mis à jour en direct pour tout le monde
+    sb.channel('public:stats')
+      .on('postgres_changes', {event:'UPDATE', schema:'public', table:'stats'}, payload=>{
+        visitors = Number(payload.new.visitors);
+        renderStats();
+      })
+      .subscribe();
+
+    // "En ligne" réel : Presence Supabase compte les connexions actives sur ce channel
+    const clientId = 'c-' + Math.random().toString(36).slice(2) + Date.now();
+    const presence = sb.channel('online-presence', { config: { presence: { key: clientId } } });
+    presence
+      .on('presence', {event:'sync'}, ()=>{
+        online = Object.keys(presence.presenceState()).length || 1;
+        renderStats();
+      })
+      .subscribe(async (status)=>{
+        if(status === 'SUBSCRIBED'){
+          await presence.track({ online_at: new Date().toISOString() });
+        }
+      });
+  }
 
   loadInitial();
   subscribeRealtime();
