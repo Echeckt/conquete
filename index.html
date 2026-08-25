@@ -207,19 +207,18 @@
   footer.note{margin-top:18px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6;}
   footer.note a{color:var(--brand);}
 
-  .site-footer{
-    margin-top:16px;border-top:1px solid var(--border);padding-top:16px;
-    display:grid;grid-template-columns:1.3fr 1.3fr 1fr;gap:24px;
-    font-size:11px;color:var(--muted);
+  .site-footer-links{
+    margin-top:16px;border-top:1px solid var(--border);padding-top:14px;
+    display:flex;justify-content:center;align-items:center;gap:10px;
+    font-size:11px;
   }
-  .site-footer h3{
-    font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;
-    color:var(--text);margin:0 0 6px;
+  .footer-link{
+    background:none;border:none;color:var(--muted);cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;
+    text-transform:uppercase;padding:4px 2px;
   }
-  .site-footer p{margin:0 0 6px;line-height:1.6;}
-  .site-footer a{color:var(--brand);text-decoration:none;}
-  .site-footer a:hover{text-decoration:underline;}
-  @media (max-width:1100px){ .site-footer{grid-template-columns:1fr;} }
+  .footer-link:hover{color:var(--brand);text-decoration:underline;}
+  .footer-sep{color:var(--border);}
 
   ::-webkit-scrollbar{width:7px;}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
@@ -421,20 +420,12 @@
 
   </div>
 
-  <footer class="site-footer">
-    <div>
-      <h3>À propos</h3>
-      <p>TERTERR.COM est un jeu web ludique où chaque visiteur peut, contre un petit paiement, revendiquer virtuellement un département français sur une carte interactive et y afficher son nom, sa couleur et un lien vers son site. Aucun bien physique n'est vendu ni expédié : il s'agit d'un produit numérique de divertissement.</p>
-    </div>
-    <div>
-      <h3>Politique de remboursement</h3>
-      <p>Le paiement correspond à l'attribution immédiate et automatisée d'un département sur la carte au moment de la transaction. Cette attribution étant appliquée instantanément, les achats ne sont pas remboursables, sauf en cas de double paiement, d'erreur technique empêchant l'attribution, ou de dysfonctionnement avéré du site. Contacte-nous pour toute réclamation, nous répondons sous 5 jours ouvrés.</p>
-    </div>
-    <div>
-      <h3>Contact</h3>
-      <p>Une question, un problème avec ta commande ou ton département ?</p>
-      <p><a href="mailto:contact@terterr.com">contact@terterr.com</a></p>
-    </div>
+  <footer class="site-footer-links">
+    <button class="footer-link" data-info="about">À propos</button>
+    <span class="footer-sep">·</span>
+    <button class="footer-link" data-info="refund">Remboursement</button>
+    <span class="footer-sep">·</span>
+    <button class="footer-link" data-info="contact">Contact</button>
   </footer>
 
 </div>
@@ -458,6 +449,17 @@
     <div class="modal-actions">
       <button class="btn-ghost" id="btnCancel">Annuler</button>
       <button class="btn-invade" id="btnConfirm">Confirmer l'invasion</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info modal (À propos / Remboursement / Contact) -->
+<div class="overlay" id="infoOverlay">
+  <div class="modal">
+    <h3 id="infoTitle">—</h3>
+    <div id="infoBody" style="font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px;"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="btn-ghost" id="btnInfoClose" style="flex:1;">Fermer</button>
     </div>
   </div>
 </div>
@@ -910,6 +912,37 @@
         }
       });
   }
+
+  // ---- Popups pied de page : À propos / Remboursement / Contact ----
+  const INFO_CONTENT = {
+    about: {
+      title: "À propos",
+      body: "TERTERR.COM est un jeu web ludique où chaque visiteur peut, contre un petit paiement, revendiquer virtuellement un département français sur une carte interactive et y afficher son nom, sa couleur et un lien vers son site. Aucun bien physique n'est vendu ni expédié : il s'agit d'un produit numérique de divertissement."
+    },
+    refund: {
+      title: "Politique de remboursement",
+      body: "Le paiement correspond à l'attribution immédiate et automatisée d'un département sur la carte au moment de la transaction. Cette attribution étant appliquée instantanément, les achats ne sont pas remboursables, sauf en cas de double paiement, d'erreur technique empêchant l'attribution, ou de dysfonctionnement avéré du site. Contacte-nous pour toute réclamation, nous répondons sous 5 jours ouvrés."
+    },
+    contact: {
+      title: "Contact",
+      body: "Une question, un problème avec ta commande ou ton département ?<br><br><a href=\"mailto:contact@terterr.com\" style=\"color:var(--brand);\">contact@terterr.com</a>"
+    }
+  };
+
+  function openInfo(key){
+    const c = INFO_CONTENT[key];
+    if(!c) return;
+    document.getElementById('infoTitle').textContent = c.title;
+    document.getElementById('infoBody').innerHTML = c.body;
+    document.getElementById('infoOverlay').classList.add('open');
+  }
+  document.querySelectorAll('.footer-link').forEach(btn=>{
+    btn.addEventListener('click', ()=> openInfo(btn.dataset.info));
+  });
+  document.getElementById('btnInfoClose').onclick = ()=> document.getElementById('infoOverlay').classList.remove('open');
+  document.getElementById('infoOverlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'infoOverlay') e.currentTarget.classList.remove('open');
+  });
 
   loadInitial();
   subscribeRealtime();
