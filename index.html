@@ -958,7 +958,9 @@
     btn.disabled = true; btn.textContent = "Redirection vers le paiement…";
 
     try{
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+      // ⚠️ TEMPORAIRE : appelle Stripe (create-checkout-stripe) au lieu de Dodo (create-checkout)
+      // Pour revenir à Dodo : remplace "create-checkout-stripe" par "create-checkout" ci-dessous.
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-stripe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, name, url, color })
