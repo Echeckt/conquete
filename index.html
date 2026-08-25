@@ -467,7 +467,6 @@
     <input id="inpName" type="text" placeholder="ex : MonSite.fr" maxlength="40" required>
     <label for="inpUrl" style="margin-top:14px;">Lien de ton site (backlink) *</label>
     <input id="inpUrl" type="text" placeholder="https://monsite.fr" required>
-    <div class="rc-hint" style="margin-top:6px;">Ton site deviendra cliquable partout sur ton département.</div>
     <label style="margin-top:14px;">Couleur sur la carte *</label>
     <div id="colorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
     <div class="price-line" style="margin-top:14px;">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
@@ -622,7 +621,7 @@
   DEPT_ORDER.forEach(c => DEPT_NAMES[c] = DEPARTMENTS[c].nom);
 
   const OWNER_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff9f43","#8ad1ff","#ff6b6b"];
-  const PRESET_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff6b6b","#d21f1f","#5b6ee1","#a3d939","#c9975a"];
+  const PRESET_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff6b6b","#e0483f","#5b6ee1","#a3d939","#c9975a"];
   function colorFor(name){
     // hash déterministe : même nom -> même couleur pour tout le monde, sans coordination
     let h = 0;
