@@ -234,7 +234,7 @@
       <div class="map-head">
         <div>
           <h1>France — 96 départements</h1>
-          <div class="sub">Clique sur département pour l'envahir</div>
+          <div class="sub">Clique sur un département pour l'envahir.</div>
         </div>
         <div class="legend">
           <span><span class="sw" style="background:var(--unclaimed);"></span>non réclamée</span>
@@ -369,7 +369,8 @@
 <g class="region region-94" data-nom="Corse" data-code_insee="94">
 		<path id="dept-2A" class="dept region-94 departement departement-2A departement-corse-du-sud" data-nom="Corse-du-Sud" data-numerodepartement="2A" d="m640.5 554.2l3.2-1.7 0.7 8.4-0.1 0.5-1.9 4.9-2.7 1.9 3.3 0.4-5.8 14.7-3.1-1.2-1.2-2.8-11.2-3.4-4.8-4.4 0.2-3 4.9-3.3-9.5-1.9 2.7-7-0.9-5.8-7.3 2.6 3-8.4 2.6-1.6-7.9-4.4-1.1-5.5 5.3-3.8-3.8-4.2-2.6 1 0.5-2.7 13.6 2.1 1.2 3.5 6 3.4 6 5.9 0.5 3.2 2.7 1.1 3.7 11z"/>
 		<path id="dept-2B" class="dept region-94 departement departement-2B departement-haute-corse" data-nom="Haute-Corse" data-numerodepartement="2B" d="m643.7 551.5v1l-3.2 1.7-3.8-0.5-3.7-11-2.7-1.1-0.5-3.2-6-5.9-6-3.4-1.2-3.5-13.6-2.1v-0.2l3.9-5-0.3-3.4 2.2-2.8 2.8-0.3 0.9-2.9 10.7-4.2 3.5-4.9 8.6 1.3-0.5-17.4 2.4-2 2.9 1.1 0.2 0.9 1.5 8.2-0.5 10.6 4 5.6 3.8 26-5.4 11.9v5.5z"/>
-	</g>        </svg>
+	</g>
+<g id="icons-layer"></g>        </svg>
       </div>
 
       <div id="regionCard" class="placeholder">Sélectionne un département sur la carte pour voir son prix d'invasion.</div>
@@ -613,6 +614,50 @@
       p.style.fill = s.owner ? s.color : getComputedStyle(document.documentElement).getPropertyValue('--unclaimed').trim();
       p.classList.toggle('selected', selected === code);
     });
+    renderIcons();
+  }
+
+  // ---- Favicon + lien affichés directement sur la carte, comme sur warmap.lol ----
+  const centroidCache = {};
+  function getCentroid(code){
+    if(centroidCache[code]) return centroidCache[code];
+    const p = document.getElementById('dept-'+code);
+    if(!p || !p.getBBox) return null;
+    try{
+      const b = p.getBBox();
+      const c = { cx: b.x + b.width/2, cy: b.y + b.height/2, w: b.width, h: b.height };
+      centroidCache[code] = c;
+      return c;
+    }catch(e){ return null; }
+  }
+
+  function renderIcons(){
+    const layer = document.getElementById('icons-layer');
+    if(!layer) return;
+    let html = '';
+    DEPT_ORDER.forEach(code=>{
+      const s = state[code];
+      if(!s.owner) return;
+      const safe = safeUrl(s.owner_url);
+      if(!safe) return;
+      const c = getCentroid(code);
+      if(!c) return;
+      let hostname;
+      try{ hostname = new URL(safe).hostname.replace(/^www\./,''); }catch(e){ return; }
+      const size = Math.max(6, Math.min(c.w, c.h, 15));
+      const imgX = c.cx - size/2;
+      const imgY = c.cy - size/2 - 1.5;
+      const favicon = `https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(hostname)}`;
+      const label = hostname.length > 15 ? hostname.slice(0,14) + '…' : hostname;
+      html += `
+        <a href="${safe}" xlink:href="${safe}" target="_blank" rel="noopener noreferrer nofollow">
+          <rect x="${(imgX-1.3).toFixed(1)}" y="${(imgY-1.3).toFixed(1)}" width="${(size+2.6).toFixed(1)}" height="${(size+2.6).toFixed(1)}" rx="2" fill="#0a0c10" opacity="0.82"></rect>
+          <image href="${favicon}" xlink:href="${favicon}" x="${imgX.toFixed(1)}" y="${imgY.toFixed(1)}" width="${size.toFixed(1)}" height="${size.toFixed(1)}" style="pointer-events:none;"></image>
+          <text x="${c.cx.toFixed(1)}" y="${(imgY + size + 5).toFixed(1)}" text-anchor="middle" font-size="4.6" fill="#ffffff" style="paint-order:stroke;stroke:#05060a;stroke-width:1.3px;font-family:'JetBrains Mono',monospace;pointer-events:none;">${escapeHtml(label)}</text>
+        </a>
+      `;
+    });
+    layer.innerHTML = html;
   }
 
   function renderRegionCard(){
