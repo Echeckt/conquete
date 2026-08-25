@@ -54,24 +54,6 @@
   .brand .mark{
     font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;
     color:var(--text);
-    position:relative;overflow:hidden;padding:2px 5px;display:inline-block;
-  }
-  .brand .mark::after{
-    content:"";position:absolute;top:-15%;left:-15%;width:3px;height:130%;
-    background:linear-gradient(180deg, transparent, var(--brand) 40%, var(--brand) 60%, transparent);
-    box-shadow:0 0 10px 2px var(--brand);
-    opacity:0;pointer-events:none;
-    animation:radarSweep 4.5s ease-in-out infinite;
-  }
-  @keyframes radarSweep{
-    0%{ left:-15%; opacity:0; }
-    5%{ opacity:.85; }
-    42%{ left:108%; opacity:.85; }
-    48%{ opacity:0; }
-    100%{ opacity:0; left:-15%; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .brand .mark::after{ animation:none; display:none; }
   }
   .brand .mark span{color:var(--brand);}
   .brand .tag{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
@@ -207,10 +189,10 @@
   }
   .modal h3{font-family:'Bebas Neue',sans-serif;font-size:20px;margin:0 0 4px;letter-spacing:.04em;}
   .modal .modal-sub{font-size:11.5px;color:var(--muted);margin-bottom:14px;}
-  .modal label{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:10px 0 5px;}
+  .modal label{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:12px 0 7px;}
   .modal input{
     width:100%;background:#0c0e13;border:1px solid var(--border);border-radius:7px;
-    padding:9px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
+    padding:11px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
   }
   .modal input:focus{outline:none;border-color:var(--brand);}
   .modal .modal-actions{display:flex;gap:10px;margin-top:16px;}
@@ -221,6 +203,12 @@
   .modal .btn-invade{flex:1.4;}
   .modal .price-line{font-size:11.5px;color:var(--muted);margin-top:2px;}
   .modal .price-line b{color:var(--gold);}
+  .color-swatch{
+    width:38px;height:38px;border-radius:8px;cursor:pointer;border:2px solid transparent;
+    padding:0;transition:transform .1s ease;
+  }
+  .color-swatch:hover{transform:translateY(-1px);}
+  .color-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15);}
 
   footer.note{margin-top:18px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6;}
   footer.note a{color:var(--brand);}
@@ -453,20 +441,16 @@
   <div class="modal">
     <h3 id="modalTitle">Envahir —</h3>
     <div class="modal-sub">Deviens le/la propriétaire de ce département. Représente ton terter.</div>
-    <label for="inpName">Ton nom / ton site</label>
-    <input id="inpName" type="text" placeholder="ex : MonSite.fr" maxlength="40">
-    <label for="inpUrl">Lien de ton site (backlink, optionnel)</label>
-    <input id="inpUrl" type="text" placeholder="https://monsite.fr">
-    <div class="rc-hint" style="margin-top:4px;">Si tu le remplis, ton nom deviendra cliquable partout sur la carte et ouvrira ce lien dans un nouvel onglet.</div>
-    <label for="inpColor">Couleur sur la carte</label>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <input id="inpColor" type="color" value="#ff7a29" style="width:46px;height:34px;padding:2px;background:#0c0e13;border:1px solid var(--border);border-radius:7px;cursor:pointer;">
-      <span class="rc-hint">Choisis la couleur qui remplira ce département sur la carte.</span>
-    </div>
-    <div class="price-line">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
+    <label for="inpName">Ton nom / ton site *</label>
+    <input id="inpName" type="text" placeholder="ex : MonSite.fr" maxlength="40" required>
+    <label for="inpUrl" style="margin-top:14px;">Lien de ton site (backlink) *</label>
+    <input id="inpUrl" type="text" placeholder="https://monsite.fr" required>
+    <div class="rc-hint" style="margin-top:6px;">Ton site deviendra cliquable partout sur ton département.</div>
+    <label style="margin-top:14px;">Couleur sur la carte *</label>
+    <div id="colorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+    <div class="price-line" style="margin-top:14px;">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
     <div class="modal-actions">
-      <button class="btn-ghost" id="btnCancel">Annuler</button>
-      <button class="btn-invade" id="btnConfirm">Confirmer l'invasion</button>
+      <button class="btn-invade" id="btnConfirm" style="flex:1;">Confirmer l'invasion</button>
     </div>
   </div>
 </div>
@@ -600,6 +584,7 @@
   DEPT_ORDER.forEach(c => DEPT_NAMES[c] = DEPARTMENTS[c].nom);
 
   const OWNER_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff9f43","#8ad1ff","#ff6b6b"];
+  const PRESET_COLORS = ["#ff7a29","#3ddc84","#4aa8ff","#f4c542","#c66bff","#ff5d8f","#33d1c9","#ff6b6b"];
   function colorFor(name){
     // hash déterministe : même nom -> même couleur pour tout le monde, sans coordination
     let h = 0;
@@ -822,6 +807,21 @@
     p.addEventListener('click', ()=> window.__selectRegion(code));
   });
 
+  let selectedColor = PRESET_COLORS[0];
+
+  function renderColorSwatches(){
+    const wrap = document.getElementById('colorSwatches');
+    wrap.innerHTML = PRESET_COLORS.map(c => `
+      <button type="button" class="color-swatch${c===selectedColor?' selected':''}" data-color="${c}" style="background:${c};" title="${c}"></button>
+    `).join('');
+    wrap.querySelectorAll('.color-swatch').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        selectedColor = btn.dataset.color;
+        wrap.querySelectorAll('.color-swatch').forEach(b=> b.classList.toggle('selected', b === btn));
+      });
+    });
+  }
+
   function openModal(code){
     selected = code;
     const s = state[code];
@@ -829,21 +829,35 @@
     document.getElementById('modalPrice').textContent = fmt(s.price);
     document.getElementById('inpName').value = '';
     document.getElementById('inpUrl').value = '';
-    document.getElementById('inpColor').value = OWNER_COLORS[Math.floor(Math.random()*OWNER_COLORS.length)];
+    selectedColor = PRESET_COLORS[Math.floor(Math.random()*PRESET_COLORS.length)];
+    renderColorSwatches();
     document.getElementById('overlay').classList.add('open');
     setTimeout(()=> document.getElementById('inpName').focus(), 50);
   }
   function closeModal(){ document.getElementById('overlay').classList.remove('open'); }
-  document.getElementById('btnCancel').onclick = closeModal;
   document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeModal(); });
 
   document.getElementById('btnConfirm').onclick = async function(){
     const code = selected;
     if(!code) return;
-    let name = document.getElementById('inpName').value.trim() || 'Anonyme';
-    name = name.slice(0,40);
-    const url = document.getElementById('inpUrl').value.trim().slice(0,200) || null;
-    const color = document.getElementById('inpColor').value || colorFor(name);
+
+    const nameInput = document.getElementById('inpName');
+    const urlInput = document.getElementById('inpUrl');
+    const name = nameInput.value.trim().slice(0,40);
+    const url = urlInput.value.trim().slice(0,200);
+
+    if(!name){
+      alert("Indique ton nom ou le nom de ton site.");
+      nameInput.focus();
+      return;
+    }
+    if(!url){
+      alert("Le lien de ton site est obligatoire.");
+      urlInput.focus();
+      return;
+    }
+
+    const color = selectedColor;
 
     const btn = document.getElementById('btnConfirm');
     btn.disabled = true; btn.textContent = "Redirection vers le paiement…";
