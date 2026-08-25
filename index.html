@@ -207,6 +207,20 @@
   footer.note{margin-top:18px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6;}
   footer.note a{color:var(--brand);}
 
+  .site-footer{
+    margin-top:16px;border-top:1px solid var(--border);padding-top:16px;
+    display:grid;grid-template-columns:1.3fr 1.3fr 1fr;gap:24px;
+    font-size:11px;color:var(--muted);
+  }
+  .site-footer h3{
+    font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;
+    color:var(--text);margin:0 0 6px;
+  }
+  .site-footer p{margin:0 0 6px;line-height:1.6;}
+  .site-footer a{color:var(--brand);text-decoration:none;}
+  .site-footer a:hover{text-decoration:underline;}
+  @media (max-width:1100px){ .site-footer{grid-template-columns:1fr;} }
+
   ::-webkit-scrollbar{width:7px;}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 </style>
@@ -407,6 +421,22 @@
     </div>
 
   </div>
+
+  <footer class="site-footer">
+    <div>
+      <h3>À propos</h3>
+      <p>TERTERR.COM est un jeu web ludique où chaque visiteur peut, contre un petit paiement, revendiquer virtuellement un département français sur une carte interactive et y afficher son nom, sa couleur et un lien vers son site. Aucun bien physique n'est vendu ni expédié : il s'agit d'un produit numérique de divertissement.</p>
+    </div>
+    <div>
+      <h3>Politique de remboursement</h3>
+      <p>Le paiement correspond à l'attribution immédiate et automatisée d'un département sur la carte au moment de la transaction. Cette attribution étant appliquée instantanément, les achats ne sont pas remboursables, sauf en cas de double paiement, d'erreur technique empêchant l'attribution, ou de dysfonctionnement avéré du site. Contacte-nous pour toute réclamation, nous répondons sous 5 jours ouvrés.</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p>Une question, un problème avec ta commande ou ton département ?</p>
+      <p><a href="mailto:contact@terterr.com">contact@terterr.com</a></p>
+    </div>
+  </footer>
 
 </div>
 
