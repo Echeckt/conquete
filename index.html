@@ -42,13 +42,13 @@
     font-family:'JetBrains Mono', ui-monospace, monospace;
     min-height:100vh;
   }
-  .wrap{max-width:1400px;margin:0 auto;padding:14px 16px 40px;}
+  .wrap{max-width:1400px;margin:0 auto;padding:12px 16px 16px;}
 
   /* ---------- Topbar ---------- */
   .topbar{
     display:flex;align-items:center;gap:18px;flex-wrap:wrap;
     background:var(--panel);border:1px solid var(--border);
-    border-radius:10px;padding:12px 18px;margin-bottom:16px;
+    border-radius:10px;padding:10px 18px;margin-bottom:12px;
   }
   .brand{display:flex;align-items:baseline;gap:10px;margin-right:8px;}
   .brand .mark{
@@ -105,7 +105,7 @@
   @keyframes flashIn{ from{background:rgba(255,122,41,.18);} to{background:transparent;} }
 
   /* ---------- Leaderboard ---------- */
-  #leaderboard{display:flex;flex-direction:column;gap:0;}
+  #leaderboard{display:flex;flex-direction:column;gap:0;max-height:250px;overflow-y:auto;}
   .lb-row{
     display:flex;align-items:center;gap:10px;padding:8px 2px;
     border-bottom:1px solid var(--border);font-size:12px;
@@ -131,7 +131,7 @@
   .legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px;}
 
   #mapholder{width:100%;display:flex;justify-content:center;padding:6px 0 2px;}
-  svg#fr-map{width:100%;max-width:640px;height:auto;touch-action:none;cursor:grab;}
+  svg#fr-map{width:100%;max-width:540px;height:auto;touch-action:none;cursor:grab;}
   svg#fr-map.dragging{cursor:grabbing;}
   .zoom-controls{position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:6px;z-index:5;}
   .zoom-btn{
