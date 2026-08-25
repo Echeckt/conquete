@@ -242,6 +242,13 @@
   .footer-link:hover{color:var(--brand);text-decoration:underline;}
   .footer-sep{color:var(--border);}
 
+  .share-modal{max-width:360px;}
+  .share-canvas-wrap{
+    display:flex;justify-content:center;margin:14px 0;
+    background:#000;border-radius:12px;border:1px solid var(--border);overflow:hidden;
+  }
+  #shareCanvas{width:100%;max-width:220px;height:auto;display:block;}
+
   ::-webkit-scrollbar{width:7px;}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 </style>
@@ -466,6 +473,22 @@
     <div class="price-line" style="margin-top:14px;">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
     <div class="modal-actions">
       <button class="btn-invade" id="btnConfirm" style="flex:1;">Confirmer l'invasion</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share / success modal (après un paiement réussi) -->
+<div class="overlay" id="shareOverlay">
+  <div class="modal share-modal">
+    <h3>🎉 Félicitations !</h3>
+    <div class="modal-sub" id="shareSubtitle">C'est fait.</div>
+    <div class="share-canvas-wrap">
+      <canvas id="shareCanvas" width="1080" height="1920"></canvas>
+    </div>
+    <div class="modal-actions" style="flex-direction:column;gap:10px;">
+      <button class="btn-invade" id="btnShareNative" style="width:100%;">📤 Partager en story</button>
+      <button class="btn-ghost" id="btnShareDownload" style="width:100%;">⬇ Télécharger l'image</button>
+      <button class="btn-ghost" id="btnShareClose" style="width:100%;">Fermer</button>
     </div>
   </div>
 </div>
@@ -936,6 +959,7 @@
       if(!res.ok || !data.checkout_url) throw new Error(data.error || 'Erreur inconnue');
       // Redirige vers la page de paiement Dodo. Le département ne changera
       // de propriétaire qu'une fois le paiement confirmé (via webhook).
+      sessionStorage.setItem('pendingInvasion', JSON.stringify({ code, name, url, color }));
       window.location.href = data.checkout_url;
     }catch(e){
       console.error(e);
@@ -1040,7 +1064,154 @@
     if(e.target.id === 'infoOverlay') e.currentTarget.classList.remove('open');
   });
 
-  loadInitial();
+  // ---- Popup de partage après un paiement réussi ----
+  function drawShareCanvas(code, ownerName){
+    const canvas = document.getElementById('shareCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    // Fond dégradé sombre, cohérent avec la DA du site
+    const grad = ctx.createRadialGradient(W/2, H*0.32, 120, W/2, H*0.55, 1300);
+    grad.addColorStop(0, '#161c26');
+    grad.addColorStop(1, '#05060a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    const color = (state[code] && state[code].color) || '#ff7a29';
+    const pathEl = document.getElementById('dept-' + code);
+    const c = getCentroid(code);
+
+    // Silhouette du département, coloré, avec une lueur
+    if(pathEl && c){
+      const d = pathEl.getAttribute('d');
+      const path2d = new Path2D(d);
+      const boxSize = 620;
+      const scale = Math.min(boxSize / c.w, boxSize / c.h) * 0.92;
+      ctx.save();
+      ctx.translate(W/2, H*0.34);
+      ctx.scale(scale, scale);
+      ctx.translate(-c.cx, -c.cy);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 60 / scale;
+      ctx.fill(path2d);
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(0,0,0,.5)';
+      ctx.lineWidth = 1.5 / scale;
+      ctx.stroke(path2d);
+      ctx.restore();
+    }
+
+    // Textes
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = "700 46px 'JetBrains Mono', monospace";
+    ctx.fillText('DÉSORMAIS', W/2, H*0.62);
+
+    ctx.font = "400 108px 'Bebas Neue', sans-serif";
+    ctx.fillStyle = color;
+    wrapCanvasText(ctx, (DEPT_NAMES[code] || '').toUpperCase(), W/2, H*0.70, W*0.86, 100);
+
+    ctx.font = "700 46px 'JetBrains Mono', monospace";
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText("C'EST TON TERTER.", W/2, H*0.795);
+
+    ctx.font = "500 30px 'JetBrains Mono', monospace";
+    ctx.fillStyle = '#8891a0';
+    ctx.fillText('Représenté par ' + (ownerName || ''), W/2, H*0.85);
+
+    ctx.font = "400 40px 'Bebas Neue', sans-serif";
+    ctx.fillStyle = '#e9edf3';
+    ctx.fillText('TERTERR.COM', W/2, H*0.945);
+  }
+
+  // Petit helper pour retourner à la ligne un texte trop large sur canvas
+  function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(' ');
+    let line = '';
+    const lines = [];
+    for(const w of words){
+      const test = line ? line + ' ' + w : w;
+      if(ctx.measureText(test).width > maxWidth && line){
+        lines.push(line);
+        line = w;
+      } else {
+        line = test;
+      }
+    }
+    if(line) lines.push(line);
+    const startY = y - (lines.length - 1) * lineHeight / 2;
+    lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+  }
+
+  function openShareModal(code, ownerName){
+    document.getElementById('shareSubtitle').textContent =
+      `Tu viens de conquérir ${DEPT_NAMES[code] || 'ce département'} 🎉`;
+    document.fonts.ready.then(()=>{
+      drawShareCanvas(code, ownerName);
+    });
+    document.getElementById('shareOverlay').classList.add('open');
+  }
+
+  function canvasToBlob(canvas){
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  document.getElementById('btnShareClose').onclick = ()=>{
+    document.getElementById('shareOverlay').classList.remove('open');
+  };
+  document.getElementById('shareOverlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'shareOverlay') e.currentTarget.classList.remove('open');
+  });
+
+  document.getElementById('btnShareDownload').onclick = async ()=>{
+    const canvas = document.getElementById('shareCanvas');
+    const blob = await canvasToBlob(canvas);
+    if(!blob) return;
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'terterr-terter.png';
+    link.click();
+  };
+
+  document.getElementById('btnShareNative').onclick = async ()=>{
+    const canvas = document.getElementById('shareCanvas');
+    const blob = await canvasToBlob(canvas);
+    if(!blob) return;
+    const file = new File([blob], 'terterr-terter.png', { type: 'image/png' });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      try{
+        await navigator.share({
+          files: [file],
+          title: 'TERTERR.COM',
+          text: "Je viens de représenter mon terter sur TERTERR.COM !"
+        });
+        return;
+      }catch(e){ /* annulé ou non supporté, on retombe sur le téléchargement */ }
+    }
+    document.getElementById('btnShareDownload').click();
+  };
+
+  // Détecte un retour réussi depuis Dodo Payments (?status=succeeded)
+  function checkPendingInvasionReturn(){
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    const pendingRaw = sessionStorage.getItem('pendingInvasion');
+    if(status !== 'succeeded' || !pendingRaw) return;
+
+    let pending;
+    try{ pending = JSON.parse(pendingRaw); }catch(e){ return; }
+
+    sessionStorage.removeItem('pendingInvasion');
+    // Nettoie l'URL pour ne pas redéclencher au rechargement
+    history.replaceState(null, '', window.location.pathname);
+
+    // Laisse un court instant au webhook pour appliquer l'invasion en base
+    // avant d'afficher la popup (déjà généralement instantané).
+    setTimeout(()=> openShareModal(pending.code, pending.name), 900);
+  }
+
+  loadInitial().then(checkPendingInvasionReturn);
   subscribeRealtime();
 
   // ---- Déplacement (drag) + zoom de la carte ----

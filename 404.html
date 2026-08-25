@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Territoire introuvable | TERTERR.COM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c10; --panel:#12151b; --border:#252b36;
+    --text:#e9edf3; --muted:#8891a0; --brand:#ff7a29;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #14202c 0%, transparent 60%),
+      radial-gradient(1000px 500px at 100% 10%, #201319 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:24px;
+  }
+  .card{max-width:480px;}
+  .code{
+    font-family:'Bebas Neue',sans-serif;font-size:140px;line-height:1;
+    color:var(--brand);letter-spacing:2px;
+    text-shadow:0 0 40px rgba(255,122,41,.35);
+    margin:0;
+  }
+  h1{
+    font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;
+    margin:8px 0 12px;color:var(--text);
+  }
+  p{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 26px;}
+  a.btn{
+    display:inline-block;background:linear-gradient(180deg,#ff8a3d,#ff6a1f);
+    color:#180a00;font-weight:700;text-decoration:none;
+    padding:12px 22px;border-radius:8px;font-size:13px;letter-spacing:.03em;
+    box-shadow:0 4px 14px rgba(255,122,41,.25);
+  }
+  a.btn:hover{filter:brightness(1.08);}
+  .mark{margin-top:34px;font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);letter-spacing:.08em;}
+  .mark span{color:var(--brand);}
+</style>
+</head>
+<body>
+  <div class="card">
+    <p class="code">404</p>
+    <h1>CE TERRITOIRE N'EXISTE PAS.</h1>
+    <p>La page que tu cherches a été rayée de la carte — ou n'a jamais été revendiquée. Retourne conquérir un vrai département.</p>
+    <a class="btn" href="/">← Retour à la carte</a>
+    <div class="mark">TERTERR<span>.COM</span></div>
+  </div>
+</body>
+</html>
