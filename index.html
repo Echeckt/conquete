@@ -385,7 +385,7 @@
       <div class="panel">
         <h2>ℹ️ Règles</h2>
         <div style="font-size:11.5px;color:var(--muted);line-height:1.7;">
-          Chaque département part à son prix de base. Clique <b style="color:var(--text);">ENVAHIR</b>, indique ton nom (ou celui de ton site) et confirme : tu deviens propriétaire et le prix grimpe de <b style="color:var(--text);">+40%</b> pour le prochain envahisseur. Le classement des puissances compte le nombre de départements détenus, puis le total dépensé. <b style="color:var(--text);">Tout le monde voit la même carte en direct.</b>
+          Chaque département part à son prix de base. Clique <b style="color:var(--text);">ENVAHIR</b>, indique ton nom et confirme : tu es redirigé·e vers un paiement sécurisé. Une fois le paiement validé, tu deviens propriétaire et le prix grimpe de <b style="color:var(--text);">+40%</b> pour le prochain envahisseur. Le classement des puissances compte le nombre de départements détenus, puis le total dépensé. <b style="color:var(--text);">Tout le monde voit la même carte en direct.</b>
         </div>
       </div>
     </div>
@@ -781,21 +781,24 @@
     const color = document.getElementById('inpColor').value || colorFor(name);
 
     const btn = document.getElementById('btnConfirm');
-    btn.disabled = true; btn.textContent = "…";
+    btn.disabled = true; btn.textContent = "Redirection vers le paiement…";
 
-    const { error } = await sb.rpc('invade_region', {
-      p_code: code, p_name: name, p_url: url, p_color: color
-    });
-
-    btn.disabled = false; btn.textContent = "Confirmer l'invasion";
-
-    if(error){
-      alert("Ce département vient peut-être d'être envahi par quelqu'un d'autre, ou la connexion a échoué. Réessaie.");
-      console.error(error);
-      return;
+    try{
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, name, url, color })
+      });
+      const data = await res.json();
+      if(!res.ok || !data.checkout_url) throw new Error(data.error || 'Erreur inconnue');
+      // Redirige vers la page de paiement Dodo. Le département ne changera
+      // de propriétaire qu'une fois le paiement confirmé (via webhook).
+      window.location.href = data.checkout_url;
+    }catch(e){
+      console.error(e);
+      alert("Impossible de démarrer le paiement pour le moment. Réessaie.");
+      btn.disabled = false; btn.textContent = "Confirmer l'invasion";
     }
-    // Le state se met à jour tout seul via Realtime (voir plus bas)
-    closeModal();
   };
 
   // ---- Chargement initial depuis Supabase ----
