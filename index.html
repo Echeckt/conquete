@@ -64,6 +64,8 @@
   .stat.live b{color:#3ddc84;}
   .stat.money b{color:var(--gold);}
   .dot{width:7px;height:7px;border-radius:50%;background:#3ddc84;display:inline-block;margin-right:5px;box-shadow:0 0 8px #3ddc84;}
+  .stats-center{flex:1;display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:wrap;}
+  .right-group{display:flex;align-items:center;gap:14px;}
   .spacer{flex:1;}
   .demo-pill{
     font-size:10px;letter-spacing:.08em;color:var(--muted);
@@ -72,7 +74,7 @@
   }
 
   /* ---------- Layout ---------- */
-  .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:14px;align-items:start;}
+  .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:10px;align-items:start;}
   @media (max-width:1100px){
     .grid{grid-template-columns:1fr;}
     .grid > .map-panel{order:-1;}
@@ -80,7 +82,7 @@
 
   .panel{
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
-    padding:14px;
+    padding:11px;
   }
   .panel h2{
     font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;
@@ -131,7 +133,7 @@
   .legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px;}
 
   #mapholder{width:100%;display:flex;justify-content:center;padding:6px 0 2px;}
-  svg#fr-map{width:100%;max-width:540px;height:auto;touch-action:none;cursor:grab;}
+  svg#fr-map{width:100%;max-width:490px;height:auto;touch-action:none;cursor:grab;}
   svg#fr-map.dragging{cursor:grabbing;}
   .zoom-controls{position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:6px;z-index:5;}
   .zoom-btn{
@@ -173,7 +175,7 @@
   .btn-invade:hover{filter:brightness(1.08);}
   .btn-invade:active{transform:translateY(1px);}
   .rc-hint{font-size:10.5px;color:var(--muted);}
-  #regionCard.placeholder{color:var(--muted);font-size:12px;text-align:center;padding:26px 10px;}
+  #regionCard.placeholder{color:var(--muted);font-size:12px;text-align:center;padding:14px 10px;}
 
   /* ---------- Claim modal ---------- */
   .overlay{
@@ -217,19 +219,22 @@
       <div class="mark">TERTERR<span>.COM</span></div>
     </div>
     <div class="tag" style="margin-right:10px;">Représente ton terter</div>
-    <div class="stat live"><b><span class="dot"></span><span id="statOnline">1</span></b><span>en ligne</span></div>
-    <div class="stat"><b id="statVisitors">0</b><span>visiteurs</span></div>
-    <div class="stat money"><b id="statPlundered">0 €</b><span>pillés</span></div>
-    <div class="stat"><b id="statClicks">0</b><span>clics</span></div>
-    <div class="stat"><b id="statClaimed">0/96</b><span>revendiquées</span></div>
-    <div class="spacer"></div>
-    <div class="demo-pill"><span class="dot"></span>en direct — multijoueur</div>
+    <div class="stats-center">
+      <div class="stat"><b id="statVisitors">0</b><span>visiteurs</span></div>
+      <div class="stat money"><b id="statPlundered">0 €</b><span>pillés</span></div>
+      <div class="stat"><b id="statClicks">0</b><span>clics</span></div>
+      <div class="stat"><b id="statClaimed">0/96</b><span>revendiquées</span></div>
+    </div>
+    <div class="right-group">
+      <div class="stat live"><b><span class="dot"></span><span id="statOnline">1</span></b><span>en ligne</span></div>
+      <div class="demo-pill"><span class="dot"></span>en direct — multijoueur</div>
+    </div>
   </div>
 
   <div class="grid">
 
     <!-- LEFT: war report + leaderboard -->
-    <div style="display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;flex-direction:column;gap:10px;">
       <div class="panel">
         <h2><span class="dot"></span>Rapport de guerre</h2>
         <div id="warReport"></div>
