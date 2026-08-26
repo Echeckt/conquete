@@ -251,6 +251,24 @@
 
   ::-webkit-scrollbar{width:7px;}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+  .conquer-france-bar{
+    width:100%;margin:12px 0;padding:12px 16px;
+    background:linear-gradient(180deg, rgba(255,122,41,.14), rgba(255,122,41,.05));
+    border:1.5px solid rgba(255,122,41,.6);border-radius:10px;
+    color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:14px;letter-spacing:.02em;cursor:pointer;text-align:center;
+    box-shadow:0 0 18px rgba(255,122,41,.25);
+    animation:conquerPulse 3s ease-in-out infinite;
+  }
+  .conquer-france-bar:hover{filter:brightness(1.12);}
+  @keyframes conquerPulse{
+    0%,100%{ box-shadow:0 0 12px rgba(255,122,41,.2); }
+    50%{ box-shadow:0 0 26px rgba(255,122,41,.45); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .conquer-france-bar{ animation:none; }
+  }
 </style>
 </head>
 <body>
@@ -269,6 +287,10 @@
       <div class="demo-pill" style="display:flex;align-items:center;gap:6px;color:var(--text);"><span class="dot"></span><span id="statOnline">1</span> en ligne</div>
     </div>
   </div>
+
+  <button id="btnConquerFrance" class="conquer-france-bar" type="button">
+    🌍 CONQUÉRIR LA FRANCE ENTIÈRE — <span id="francePriceDisplay">500 €</span>
+  </button>
 
   <div class="grid">
 
@@ -471,6 +493,24 @@
     <div class="price-line" style="margin-top:14px;">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
     <div class="modal-actions">
       <button class="btn-invade" id="btnConfirm" style="flex:1;">Confirmer l'invasion</button>
+    </div>
+  </div>
+</div>
+
+<!-- France conquest modal -->
+<div class="overlay" id="franceOverlay">
+  <div class="modal">
+    <h3>🌍 Conquête de la France</h3>
+    <div class="modal-sub">Tous les départements deviennent tiens en une seule fois. Chaque ancien propriétaire garde sa place dans l'historique. Le prix double après chaque conquête totale.</div>
+    <label for="inpFranceName">Ton nom / ton site *</label>
+    <input id="inpFranceName" type="text" placeholder="ex : MonSite.fr" maxlength="40" required>
+    <label for="inpFranceUrl" style="margin-top:14px;">Lien de ton site (backlink) *</label>
+    <input id="inpFranceUrl" type="text" placeholder="https://monsite.fr" required>
+    <label style="margin-top:14px;">Couleur sur la carte *</label>
+    <div id="franceColorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+    <div class="price-line" style="margin-top:14px;">Prix de la conquête totale : <b id="francePriceModal">500 €</b></div>
+    <div class="modal-actions">
+      <button class="btn-invade" id="btnConfirmFrance" style="flex:1;">🌍 Conquérir la France pour <span id="btnFrancePrice">500 €</span></button>
     </div>
   </div>
 </div>
@@ -902,18 +942,23 @@
   });
 
   let selectedColor = PRESET_COLORS[0];
+  let selectedFranceColor = PRESET_COLORS[0];
 
-  function renderColorSwatches(){
-    const wrap = document.getElementById('colorSwatches');
+  function renderSwatchesInto(containerId, currentColor, onPick){
+    const wrap = document.getElementById(containerId);
     wrap.innerHTML = PRESET_COLORS.map(c => `
-      <button type="button" class="color-swatch${c===selectedColor?' selected':''}" data-color="${c}" style="background:${c};" title="${c}"></button>
+      <button type="button" class="color-swatch${c===currentColor?' selected':''}" data-color="${c}" style="background:${c};" title="${c}"></button>
     `).join('');
     wrap.querySelectorAll('.color-swatch').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        selectedColor = btn.dataset.color;
+        onPick(btn.dataset.color);
         wrap.querySelectorAll('.color-swatch').forEach(b=> b.classList.toggle('selected', b === btn));
       });
     });
+  }
+
+  function renderColorSwatches(){
+    renderSwatchesInto('colorSwatches', selectedColor, (c)=> selectedColor = c);
   }
 
   function openModal(code){
@@ -1078,6 +1123,8 @@
     const canvas = document.getElementById('shareCanvas');
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
+    const isFrance = code === 'FR';
+    const displayName = isFrance ? 'LA FRANCE ENTIÈRE' : (DEPT_NAMES[code] || '').toUpperCase();
 
     // Fond dégradé sombre, cohérent avec la DA du site
     const grad = ctx.createRadialGradient(W/2, H*0.32, 120, W/2, H*0.55, 1300);
@@ -1093,11 +1140,11 @@
     ctx.fillText('🎉 FÉLICITATIONS !', W/2, H*0.095);
     ctx.font = "500 30px 'JetBrains Mono', monospace";
     ctx.fillStyle = '#8891a0';
-    wrapCanvasText(ctx, `Tu viens de conquérir ${(DEPT_NAMES[code]||'').toUpperCase()}`, W/2, H*0.15, W*0.82, 40);
+    wrapCanvasText(ctx, `Tu viens de conquérir ${displayName}`, W/2, H*0.15, W*0.82, 40);
 
-    const color = (state[code] && state[code].color) || '#ff7a29';
+    const color = isFrance ? (window.__lastFranceColor || '#ff7a29') : ((state[code] && state[code].color) || '#ff7a29');
     const pathEl = document.getElementById('dept-' + code);
-    const c = getCentroid(code);
+    const c = isFrance ? { cx: 105 + 568/2, cy: 18 + 567/2, w: 568, h: 567 } : getCentroid(code);
     const cx = W/2, cy = H*0.34;
 
     function hexToRgba(hex, a){
@@ -1147,8 +1194,32 @@
       ctx.shadowBlur = 0;
     });
 
-    // Silhouette du département, coloré, avec une lueur
-    if(pathEl && c){
+    // Silhouette : un seul département, ou la France entière
+    if(isFrance){
+      const boxSize = 620;
+      const scale = Math.min(boxSize / c.w, boxSize / c.h) * 0.92;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+      ctx.translate(-c.cx, -c.cy);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 30 / scale;
+      DEPT_ORDER.forEach(dc=>{
+        const el = document.getElementById('dept-' + dc);
+        if(!el) return;
+        ctx.fill(new Path2D(el.getAttribute('d')));
+      });
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(0,0,0,.5)';
+      ctx.lineWidth = 1 / scale;
+      DEPT_ORDER.forEach(dc=>{
+        const el = document.getElementById('dept-' + dc);
+        if(!el) return;
+        ctx.stroke(new Path2D(el.getAttribute('d')));
+      });
+      ctx.restore();
+    } else if(pathEl && c){
       const d = pathEl.getAttribute('d');
       const path2d = new Path2D(d);
       const boxSize = 620;
@@ -1174,7 +1245,7 @@
     ctx.textAlign = 'center';
 
     // Badge "Département conquis"
-    const badgeText = '🛡 DÉPARTEMENT CONQUIS';
+    const badgeText = isFrance ? '🛡 FRANCE ENTIÈRE CONQUISE' : '🛡 DÉPARTEMENT CONQUIS';
     ctx.font = "700 26px 'JetBrains Mono', monospace";
     const badgeW = ctx.measureText(badgeText).width + 60;
     const badgeH = 54;
@@ -1203,7 +1274,7 @@
 
     ctx.font = "400 108px 'Bebas Neue', sans-serif";
     ctx.fillStyle = color;
-    wrapCanvasText(ctx, (DEPT_NAMES[code] || '').toUpperCase(), W/2, H*0.72, W*0.86, 100);
+    wrapCanvasText(ctx, displayName, W/2, H*0.72, W*0.86, 100);
 
     ctx.font = "700 46px 'JetBrains Mono', monospace";
     ctx.fillStyle = '#ffffff';
@@ -1237,9 +1308,10 @@
     lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
   }
 
-  function openShareModal(code, ownerName){
-    document.getElementById('shareSubtitle').textContent =
-      `Tu viens de conquérir ${DEPT_NAMES[code] || 'ce département'} 🎉`;
+  function openShareModal(code, ownerName, ownerColor){
+    if(ownerColor) window.__lastFranceColor = ownerColor;
+    const label = code === 'FR' ? 'la France entière' : (DEPT_NAMES[code] || 'ce département');
+    document.getElementById('shareSubtitle').textContent = `Tu viens de conquérir ${label} 🎉`;
     document.fonts.ready.then(()=>{
       drawShareCanvas(code, ownerName);
     });
@@ -1301,8 +1373,85 @@
 
     // Laisse un court instant au webhook pour appliquer l'invasion en base
     // avant d'afficher la popup (déjà généralement instantané).
-    setTimeout(()=> openShareModal(pending.code, pending.name), 900);
+    const code = pending.mode === 'france' ? 'FR' : pending.code;
+    setTimeout(()=> openShareModal(code, pending.name, pending.color), 900);
   }
+
+  // ---- Conquête de la France entière ----
+  let francePrice = 500;
+
+  function renderFrancePrice(){
+    const txt = fmt(francePrice);
+    const a = document.getElementById('francePriceDisplay');
+    const b = document.getElementById('francePriceModal');
+    const c = document.getElementById('btnFrancePrice');
+    if(a) a.textContent = txt;
+    if(b) b.textContent = txt;
+    if(c) c.textContent = txt;
+  }
+
+  async function loadFrancePrice(){
+    const { data, error } = await sb.from('world_conquest').select('price').eq('id', 1).single();
+    if(!error && data){
+      francePrice = Number(data.price);
+      renderFrancePrice();
+    }
+  }
+
+  function openFranceModal(){
+    document.getElementById('inpFranceName').value = '';
+    document.getElementById('inpFranceUrl').value = '';
+    selectedFranceColor = PRESET_COLORS[Math.floor(Math.random()*PRESET_COLORS.length)];
+    renderSwatchesInto('franceColorSwatches', selectedFranceColor, (c)=> selectedFranceColor = c);
+    renderFrancePrice();
+    document.getElementById('franceOverlay').classList.add('open');
+  }
+  document.getElementById('btnConquerFrance').addEventListener('click', openFranceModal);
+  document.getElementById('franceOverlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'franceOverlay') e.currentTarget.classList.remove('open');
+  });
+
+  document.getElementById('btnConfirmFrance').onclick = async function(){
+    const nameInput = document.getElementById('inpFranceName');
+    const urlInput = document.getElementById('inpFranceUrl');
+    const name = nameInput.value.trim().slice(0,40);
+    const url = urlInput.value.trim().slice(0,200);
+
+    if(!name){ alert("Indique ton nom ou le nom de ton site."); nameInput.focus(); return; }
+    if(!url){ alert("Le lien de ton site est obligatoire."); urlInput.focus(); return; }
+
+    const color = selectedFranceColor;
+    const btn = document.getElementById('btnConfirmFrance');
+    btn.disabled = true; btn.textContent = "Redirection vers le paiement…";
+
+    try{
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-stripe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'france', name, url, color })
+      });
+      const data = await res.json();
+      if(!res.ok || !data.checkout_url) throw new Error(data.error || 'Erreur inconnue');
+      sessionStorage.setItem('pendingInvasion', JSON.stringify({ mode: 'france', name, url, color }));
+      window.location.href = data.checkout_url;
+    }catch(e){
+      console.error(e);
+      alert("Impossible de démarrer le paiement pour le moment. Réessaie.");
+      btn.disabled = false; btn.textContent = "🌍 Conquérir la France pour " + fmt(francePrice);
+    }
+  };
+
+  function subscribeFranceRealtime(){
+    sb.channel('public:world_conquest')
+      .on('postgres_changes', {event:'UPDATE', schema:'public', table:'world_conquest'}, payload=>{
+        francePrice = Number(payload.new.price);
+        renderFrancePrice();
+      })
+      .subscribe();
+  }
+
+  loadFrancePrice();
+  subscribeFranceRealtime();
 
   loadInitial().then(checkPendingInvasionReturn);
   subscribeRealtime();
