@@ -1040,9 +1040,18 @@
       clicks = feed.length;
     }
 
-    // Compteur de visites réel : +1 à chaque chargement de page, valeur partagée par tous
-    const { data: v, error: e3 } = await sb.rpc('increment_visitors');
-    if(!e3 && v !== null){ visitors = Number(v); }
+    // Compteur de visites réel : +1 une seule fois par session de navigation
+    // (un simple rechargement de page ne recompte pas), valeur partagée par tous
+    if(sessionStorage.getItem('visitCounted')){
+      const { data: cur, error: e3 } = await sb.from('stats').select('visitors').eq('id', 1).single();
+      if(!e3 && cur){ visitors = Number(cur.visitors); }
+    } else {
+      const { data: v, error: e3 } = await sb.rpc('increment_visitors');
+      if(!e3 && v !== null){
+        visitors = Number(v);
+        sessionStorage.setItem('visitCounted', '1');
+      }
+    }
 
     renderAll();
   }
