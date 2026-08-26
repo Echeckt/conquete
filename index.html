@@ -592,53 +592,13 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 </style>
 
 
-<style id="bomb-load-animation">
-  #bombIntro{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden;display:grid;place-items:center;}
-  #bombIntro .bomb-wrap{position:absolute;left:50%;top:50%;width:92px;height:92px;transform:translate(-50%,-50%) translateY(-62vh) rotate(-18deg) scale(.72);}
-  #bombIntro .bomb{position:absolute;left:17px;top:22px;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#4b4a46 0 8%,#242421 22%,#11110f 68%,#050504 100%);border:1px solid #4a4339;box-shadow:0 16px 38px rgba(0,0,0,.65),inset -8px -10px 18px rgba(0,0,0,.55),inset 8px 8px 14px rgba(255,255,255,.035);}
-  #bombIntro .bomb:before{content:"";position:absolute;width:15px;height:13px;left:36px;top:-9px;border:4px solid #8b745d;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;transform:rotate(-20deg);}
-  #bombIntro .bomb:after{content:"";position:absolute;width:8px;height:8px;left:51px;top:-17px;border-radius:50%;background:#ff7a2f;box-shadow:0 0 10px #ff6426,0 0 22px #ff3d12;animation:fuseSpark .18s steps(2,end) infinite;}
-  #bombIntro .bomb-mark{position:absolute;inset:0;display:grid;place-items:center;color:#ff6a2b;font-family:"JetBrains Mono",monospace;font-size:18px;font-weight:800;text-shadow:0 0 14px rgba(255,100,38,.45);}
-  #bombIntro .blast{position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;transform:translate(-50%,-50%) scale(.05);opacity:0;background:radial-gradient(circle,#fff 0 5%,#ffd08a 8%,#ff7a2f 22%,#e63b12 43%,rgba(255,73,20,.36) 58%,rgba(255,73,20,0) 72%);animation:none;}
-  #bombIntro .shockwave{position:absolute;left:50%;top:50%;width:70px;height:70px;border-radius:50%;border:3px solid rgba(255,132,72,.9);transform:translate(-50%,-50%) scale(.1);opacity:0;animation:none;}
-  #bombIntro .flash{position:absolute;inset:0;background:#fff;opacity:0;animation:none;}
-  #bombIntro .sparks{position:absolute;left:50%;top:50%;width:1px;height:1px;}
-  #bombIntro .sparks i{position:absolute;width:5px;height:22px;border-radius:999px;background:linear-gradient(#fff2b3,#ff6a24 55%,transparent);transform-origin:50% 0;opacity:0;}
-  #bombIntro .sparks i:nth-child(1){transform:rotate(0deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(2){transform:rotate(45deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(3){transform:rotate(90deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(4){transform:rotate(135deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(5){transform:rotate(180deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(6){transform:rotate(225deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(7){transform:rotate(270deg) translateY(-20px)}
-  #bombIntro .sparks i:nth-child(8){transform:rotate(315deg) translateY(-20px)}
-  #bombIntro.armed .bomb-wrap{animation:bombDrop .72s cubic-bezier(.2,.8,.22,1) both;}
-  #bombIntro.explode .blast{animation:blastCore 1s cubic-bezier(.12,.75,.22,1) both;}
-  #bombIntro.explode .shockwave{animation:shockwave 1.05s ease-out both;}
-  #bombIntro.explode .flash{animation:screenFlash .55s ease-out both;}
-  #bombIntro.explode .sparks i{animation:sparkFly .62s ease-out both;}
-  #bombIntro.explode .bomb-wrap{animation:bombVanish .12s ease-out both;}
-  body.bomb-impact .shell{animation:pageImpact .32s ease-out;}
-  @keyframes bombDrop{0%{transform:translate(-50%,-50%) translateY(-62vh) rotate(-18deg) scale(.72);filter:blur(1px)}72%{transform:translate(-50%,-50%) translateY(16px) rotate(7deg) scale(1.06)}100%{transform:translate(-50%,-50%) translateY(0) rotate(0) scale(1)}}
-  @keyframes fuseSpark{0%{opacity:.45;transform:scale(.7)}100%{opacity:1;transform:scale(1.35)}}
-  @keyframes blastCore{0%{opacity:0;transform:translate(-50%,-50%) scale(.05)}10%{opacity:1}55%{opacity:.95;transform:translate(-50%,-50%) scale(22)}100%{opacity:0;transform:translate(-50%,-50%) scale(34)}}
-  @keyframes shockwave{0%{opacity:.95;transform:translate(-50%,-50%) scale(.1)}35%{opacity:.7}100%{opacity:0;transform:translate(-50%,-50%) scale(9)}}
-  @keyframes screenFlash{0%{opacity:0}12%{opacity:.72}45%{opacity:.08}100%{opacity:0}}
-  @keyframes bombVanish{to{opacity:0;transform:translate(-50%,-50%) scale(1.35)}}
-  @keyframes sparkFly{0%{opacity:1;margin-top:0;height:20px}100%{opacity:0;margin-top:-190px;height:4px}}
+<style id="interface-load-shake">
+  body.interface-impact .shell{animation:pageImpact .32s ease-out;}
   @keyframes pageImpact{0%,100%{transform:translate(0,0)}20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-2px,-1px)}80%{transform:translate(2px,1px)}}
-  @media (prefers-reduced-motion:reduce){#bombIntro{display:none!important}}
+  @media (prefers-reduced-motion:reduce){body.interface-impact .shell{animation:none}}
 </style>
 </head>
 <body>
-<div id="bombIntro" aria-hidden="true">
-  <div class="bomb-wrap"><div class="bomb"><span class="bomb-mark">T</span></div></div>
-  <div class="blast"></div>
-  <div class="shockwave"></div>
-  <div class="sparks"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="flash"></div>
-</div>
-
 <div class="shell">
   <header class="topbar">
     <a class="brand" href="/" aria-label="TERTERR accueil">
@@ -1985,20 +1945,11 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 </script>
 
 
-<script id="bomb-load-script">
+<script id="interface-load-shake-script">
 (function(){
-  const bombIntro = document.getElementById('bombIntro');
-  if(!bombIntro) return;
   window.addEventListener('load', function(){
-    bombIntro.classList.add('armed');
-    setTimeout(function(){
-      bombIntro.classList.add('explode');
-      document.body.classList.add('bomb-impact');
-    }, 720);
-    setTimeout(function(){
-      bombIntro.remove();
-      document.body.classList.remove('bomb-impact');
-    }, 1900);
+    document.body.classList.add('interface-impact');
+    setTimeout(function(){ document.body.classList.remove('interface-impact'); }, 360);
   }, {once:true});
 })();
 </script>
