@@ -263,7 +263,6 @@
     <div class="stats-center">
       <div class="stat"><b id="statVisitors">0</b><span>visiteurs</span></div>
       <div class="stat money"><b id="statPlundered">0 €</b><span>pillés</span></div>
-      <div class="stat"><b id="statClicks">0</b><span>clics</span></div>
       <div class="stat"><b id="statClaimed">0/96</b><span>revendiquées</span></div>
     </div>
     <div class="right-group">
@@ -688,7 +687,7 @@
     document.getElementById('statOnline').textContent = online;
     document.getElementById('statVisitors').textContent = visitors.toLocaleString("fr-FR");
     document.getElementById('statPlundered').textContent = fmt(plundered);
-    document.getElementById('statClicks').textContent = clicks.toLocaleString("fr-FR");
+    // (compteur "clics" retiré du header — trop trompeur, gardé en interne seulement)
     const claimed = DEPT_ORDER.filter(c=>state[c].owner).length;
     document.getElementById('statClaimed').textContent = claimed + "/96";
   }
