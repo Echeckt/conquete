@@ -14,315 +14,312 @@
 <meta name="twitter:title" content="TERTERR — Représente ton terter">
 <meta name="twitter:description" content="Conquiers un département français. Choisis ta couleur, ton nom, ton lien — et fais grimper le prix pour le prochain.">
 <meta name="twitter:image" content="https://terterr.com/og-image.png">
+<meta name="theme-color" content="#090a0c">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMwYTBjMTAiLz48dGV4dCB4PSIzMiIgeT0iNDciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjM4IiBmaWxsPSIjZmY3YTI5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UPC90ZXh0Pjwvc3ZnPgo=">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;750&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0c10;
-    --panel:#12151b;
-    --panel-2:#161a22;
-    --border:#252b36;
-    --text:#e9edf3;
-    --muted:#8891a0;
-    --brand:#ff7a29;
-    --brand-dim:#5c3a20;
-    --unclaimed:#1c2029;
-    --danger:#ff4d5e;
-    --gold:#f4c542;
+    --bg:#090a0c;
+    --surface:#0f1115;
+    --surface-2:#13161b;
+    --surface-3:#171a20;
+    --border:#23262d;
+    --border-soft:#1b1e24;
+    --text:#f5f7fa;
+    --text-2:#c7ccd5;
+    --muted:#7f8794;
+    --muted-2:#606774;
+    --brand:#ff6b2c;
+    --brand-hover:#ff7b43;
+    --brand-soft:rgba(255,107,44,.10);
+    --brand-border:rgba(255,107,44,.26);
+    --success:#40c985;
+    --gold:#f5b942;
+    --danger:#f05b6a;
+    --unclaimed:#1a1d23;
+    --radius:16px;
+    --shadow:0 18px 60px rgba(0,0,0,.24);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  *{box-sizing:border-box}
+  html{background:var(--bg);scroll-behavior:smooth}
   body{
+    margin:0;min-height:100vh;color:var(--text);
+    font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     background:
-      radial-gradient(1200px 600px at 15% -10%, #14202c 0%, transparent 60%),
-      radial-gradient(1000px 500px at 100% 0%, #201319 0%, transparent 55%),
+      radial-gradient(900px 420px at 50% -180px, rgba(255,107,44,.085), transparent 68%),
       var(--bg);
-    color:var(--text);
-    font-family:'JetBrains Mono', ui-monospace, monospace;
-    min-height:100vh;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   }
-  .wrap{max-width:1400px;margin:0 auto;padding:10px 16px 10px;}
+  button,input{font:inherit}
+  button{appearance:none}
+  a{color:inherit}
+  ::selection{background:rgba(255,107,44,.22)}
 
-  /* ---------- Topbar ---------- */
+  .shell{width:min(1480px,100%);margin:0 auto;padding:0 24px 28px}
   .topbar{
-    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    background:var(--panel);border:1px solid var(--border);
-    border-radius:10px;padding:10px 18px;margin-bottom:12px;
+    height:72px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border-soft);margin-bottom:32px;
   }
-  .brand{display:flex;align-items:baseline;gap:10px;margin-right:8px;}
-  .brand .mark{
-    font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;
-    color:var(--text);
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-symbol{
+    width:34px;height:34px;border-radius:10px;background:var(--text);color:#0b0c0e;
+    display:grid;place-items:center;font-size:16px;font-weight:900;letter-spacing:-.05em;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)
   }
-  .brand .mark span{color:var(--brand);}
-  .brand .tag{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
-  .stat{display:flex;flex-direction:column;gap:2px;padding-right:16px;border-right:1px solid var(--border);}
-  .stat:last-of-type{border-right:none;}
-  .stat b{font-size:15px;font-weight:700;}
-  .stat span{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-  .stat.live b{color:#3ddc84;}
-  .stat.money b{color:var(--gold);}
-  .dot{width:7px;height:7px;border-radius:50%;background:#3ddc84;display:inline-block;margin-right:5px;box-shadow:0 0 8px #3ddc84;}
-  .stats-center{flex:1;display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap;}
-  .right-group{display:flex;align-items:center;gap:14px;}
-  .spacer{flex:1;}
-  .demo-pill{
-    font-size:10px;letter-spacing:.08em;color:var(--muted);
-    border:1px dashed var(--border);padding:6px 10px;border-radius:999px;
-    text-transform:uppercase;
+  .brand-word{font-size:17px;font-weight:760;letter-spacing:-.025em}
+  .brand-word span{color:var(--brand)}
+  .top-actions{display:flex;align-items:center;gap:10px}
+  .live-chip{
+    display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;border:1px solid var(--border);
+    border-radius:999px;background:rgba(255,255,255,.018);color:var(--text-2);font-size:12px;font-weight:600
   }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(64,201,133,.09)}
 
-  /* ---------- Layout ---------- */
-  .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:10px;align-items:start;}
-  @media (max-width:1100px){
-    .grid{grid-template-columns:1fr;}
-    .grid > .map-column{order:-1;}
-  }
-  .map-column{display:flex;flex-direction:column;gap:10px;}
-  @media (max-width:700px){
-    .topbar{
-      position:relative;flex-direction:column;align-items:center;
-      gap:8px;padding:30px 14px 12px;
-    }
-    .brand{margin-right:0;}
-    .stats-center{width:100%;justify-content:center;gap:14px;}
-    .right-group{position:absolute;top:8px;right:10px;}
-    .right-group .demo-pill{font-size:9px;padding:4px 8px;}
-  }
+  .page-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:0 0 24px}
+  .eyebrow{display:flex;align-items:center;gap:8px;color:var(--brand);font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--brand)}
+  .page-intro h1{margin:0;font-size:clamp(30px,4vw,48px);line-height:1.02;letter-spacing:-.045em;font-weight:710;max-width:760px}
+  .page-intro p{margin:10px 0 0;max-width:680px;color:var(--muted);font-size:14px;line-height:1.65}
+  .intro-badge{flex:0 0 auto;color:var(--muted);font-size:12px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface)}
+  .intro-badge strong{color:var(--text-2);font-weight:650}
 
+  .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .metric{
+    min-height:88px;background:var(--surface);border:1px solid var(--border-soft);border-radius:14px;
+    padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .metric-label{font-size:11px;color:var(--muted);font-weight:650;letter-spacing:.04em;text-transform:uppercase}
+  .metric-value{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:20px;letter-spacing:-.04em;font-weight:650;color:var(--text)}
+  .metric-value.money{color:#f1c167}
+  .metric-meta{font-size:10px;color:var(--muted-2);margin-left:7px;font-family:Inter,sans-serif;font-weight:500;letter-spacing:0}
+
+  .app-grid{display:grid;grid-template-columns:280px minmax(0,1fr) 280px;gap:14px;align-items:start}
+  .side-stack,.map-column{display:flex;flex-direction:column;gap:14px;min-width:0}
   .panel{
-    background:var(--panel);border:1px solid var(--border);border-radius:10px;
-    padding:11px;
+    background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+    box-shadow:0 1px 0 rgba(255,255,255,.018);overflow:hidden
   }
-  .panel h2{
-    font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.08em;
-    margin:0 0 10px;color:var(--text);display:flex;align-items:center;gap:8px;
-  }
-  .panel h2 .dot{margin-right:0;}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 16px 13px;border-bottom:1px solid var(--border-soft)}
+  .panel-head h2{margin:0;font-size:12px;font-weight:700;letter-spacing:-.01em;color:var(--text-2)}
+  .panel-kicker{font-size:10px;color:var(--muted-2);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+  .section-status{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted)}
+  .section-status .dot{width:6px;height:6px;box-shadow:none}
+  .panel-body{padding:5px 14px 8px}
 
-  /* ---------- War report ---------- */
-  #warReport{display:flex;flex-direction:column;gap:0;max-height:290px;overflow-y:auto;}
-  .report-row{
-    display:flex;justify-content:space-between;gap:8px;
-    padding:9px 2px;border-bottom:1px solid var(--border);font-size:11.5px;
-  }
-  .report-row:last-child{border-bottom:none;}
-  .report-row .left{display:flex;flex-direction:column;gap:2px;min-width:0;}
-  .report-row .who{color:var(--text);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px;}
-  .report-row .what{color:var(--muted);font-size:10.5px;}
-  .report-row .right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;white-space:nowrap;}
-  .report-row .amt{color:var(--gold);font-weight:700;}
-  .report-row .when{color:var(--muted);font-size:10px;}
-  .report-row.new{animation:flashIn .8s ease;}
-  @keyframes flashIn{ from{background:rgba(255,122,41,.18);} to{background:transparent;} }
+  #warReport{display:flex;flex-direction:column;max-height:334px;overflow:auto}
+  .report-row{display:flex;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px solid var(--border-soft);font-size:12px}
+  .report-row:last-child{border-bottom:0}
+  .report-row .left{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .report-row .who{color:var(--text-2);font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+  .report-row .what{color:var(--muted);font-size:11px}
+  .report-row .right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;white-space:nowrap}
+  .report-row .amt{font-family:"JetBrains Mono",monospace;color:var(--text-2);font-size:11px;font-weight:650}
+  .report-row .when{color:var(--muted-2);font-size:10px}
+  .report-row.new{animation:flashIn 1s ease}
+  @keyframes flashIn{from{background:var(--brand-soft)}to{background:transparent}}
 
-  /* ---------- Leaderboard ---------- */
-  #leaderboard{display:flex;flex-direction:column;gap:0;max-height:210px;overflow-y:auto;}
-  .lb-row{
-    display:flex;align-items:center;gap:10px;padding:8px 2px;
-    border-bottom:1px solid var(--border);font-size:12px;
-  }
-  .lb-row:last-child{border-bottom:none;}
-  .lb-rank{width:16px;color:var(--muted);font-size:11px;}
-  .lb-rank.gold{color:var(--gold);}
-  .lb-swatch{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
-  .lb-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;}
-  .lb-meta{text-align:right;}
-  .lb-meta b{display:block;color:var(--gold);font-size:12px;}
-  .lb-meta span{color:var(--muted);font-size:9.5px;}
-  #leaderboard.empty-msg, .empty-msg{color:var(--muted);font-size:11.5px;padding:8px 2px;}
+  #leaderboard,#hotList{display:flex;flex-direction:column}
+  #leaderboard{max-height:310px;overflow:auto}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--border-soft);font-size:12px;transition:background .15s ease}
+  .lb-row:last-child{border-bottom:0}
+  #hotList .lb-row:hover{background:rgba(255,255,255,.018)}
+  .lb-rank{width:18px;color:var(--muted-2);font-size:11px;text-align:center;font-family:"JetBrains Mono",monospace}
+  .lb-rank.gold{color:var(--gold)}
+  .lb-swatch{width:9px;height:9px;border-radius:999px;flex:none;box-shadow:0 0 0 2px rgba(255,255,255,.035)}
+  .lb-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:620;color:var(--text-2)}
+  .lb-meta{text-align:right;line-height:1.15}
+  .lb-meta b{display:block;font-family:"JetBrains Mono",monospace;color:var(--text-2);font-size:10.5px;font-weight:650}
+  .lb-meta span{color:var(--muted-2);font-size:9.5px}
+  .empty-msg{color:var(--muted);font-size:11px;padding:14px 2px;line-height:1.5}
 
-  /* ---------- Map panel ---------- */
-  .map-panel{padding:10px 10px 4px;position:relative;}
-  .map-panel .map-head{display:flex;justify-content:space-between;align-items:center;padding:4px 8px 10px;}
-  .map-panel .map-head h1{
-    font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;margin:0;
+  .map-panel{position:relative;overflow:hidden}
+  .map-panel .map-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:18px 20px;border-bottom:1px solid var(--border-soft)}
+  .map-title h2{margin:0;font-size:15px;letter-spacing:-.02em;font-weight:680}
+  .map-title .sub{margin-top:5px;font-size:11px;color:var(--muted)}
+  .legend{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:10px;color:var(--muted);padding-top:2px}
+  .legend-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .legend .sw{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .map-stage{
+    position:relative;min-height:520px;display:flex;align-items:center;justify-content:center;padding:18px 28px 8px;
+    background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+    background-size:32px 32px;background-position:center center;
   }
-  .map-panel .map-head .sub{font-size:10.5px;color:var(--muted);}
-  .legend{display:flex;gap:14px;align-items:center;font-size:10px;color:var(--muted);flex-wrap:wrap;}
-  .legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px;}
+  .map-stage::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 35%,rgba(9,10,12,.28) 92%)}
+  #mapholder{width:100%;display:flex;justify-content:center;position:relative;z-index:1}
+  svg#fr-map{width:100%;max-width:560px;height:auto;touch-action:none;cursor:grab;filter:drop-shadow(0 18px 35px rgba(0,0,0,.24))}
+  svg#fr-map.dragging{cursor:grabbing}
+  svg#fr-map path{stroke:#0b0d10;stroke-width:1.15}
+  svg#fr-map .dept{cursor:pointer;transition:filter .16s ease,fill .22s ease,opacity .16s ease;fill:var(--unclaimed)}
+  svg#fr-map .dept:hover{filter:brightness(1.25);opacity:.94}
+  svg#fr-map .dept.selected{stroke:#fff;stroke-width:1.55;filter:brightness(1.12)}
+  .zoom-controls{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:7px;z-index:5}
+  .zoom-btn{width:34px;height:34px;border-radius:9px;background:rgba(15,17,21,.9);border:1px solid var(--border);color:var(--text-2);font-size:15px;cursor:pointer;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.16);transition:.15s ease}
+  .zoom-btn:hover{background:var(--surface-3);color:#fff;border-color:#343841}
+  .zoom-btn:active{transform:translateY(1px)}
 
-  #mapholder{width:100%;display:flex;justify-content:center;padding:6px 0 2px;}
-  svg#fr-map{width:100%;max-width:410px;height:auto;touch-action:none;cursor:grab;}
-  svg#fr-map.dragging{cursor:grabbing;}
-  .zoom-controls{position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:6px;z-index:5;}
-  .zoom-btn{
-    width:32px;height:32px;border-radius:8px;background:var(--panel-2);
-    border:1px solid var(--border);color:var(--text);font-size:16px;line-height:1;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;
-    font-family:'JetBrains Mono',monospace;
-  }
-  .zoom-btn:hover{background:var(--border);}
-  .zoom-btn:active{transform:translateY(1px);}
-  svg#fr-map path{stroke:#05060a;stroke-width:1;}
-  svg#fr-map .dept{cursor:pointer;transition:filter .15s ease, fill .25s ease;fill:var(--unclaimed);}
-  svg#fr-map .dept:hover{filter:brightness(1.3);}
-  svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:1.6;}
-
-  .region-label{
-    position:absolute;pointer-events:none;font-size:10px;color:var(--muted);
-  }
-
-  /* ---------- Region detail card ---------- */
-  #regionCard{
-    border:1px solid var(--border);background:var(--panel-2);border-radius:10px;
-    padding:14px;margin:8px 10px 4px;
-  }
-  #regionCard .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
-  #regionCard h3{margin:0;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.03em;}
-  #regionCard .rc-owner{font-size:11.5px;color:var(--muted);margin-top:2px;}
-  #regionCard .rc-owner b{color:var(--text);}
-  #regionCard .rc-price{text-align:right;}
-  #regionCard .rc-price .amt{font-size:22px;font-weight:700;color:var(--gold);}
-  #regionCard .rc-price span{display:block;font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
-  #regionCard .rc-actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  #regionCard{margin:0;border-top:1px solid var(--border-soft);background:#0c0e11;padding:18px 20px}
+  #regionCard.placeholder{color:var(--muted);font-size:12px;text-align:center;padding:20px}
+  #regionCard .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+  #regionCard h3{margin:0;font-size:15px;font-weight:680;letter-spacing:-.02em}
+  #regionCard .rc-owner{font-size:11px;color:var(--muted);margin-top:5px}
+  #regionCard .rc-owner b{color:var(--text-2)}
+  #regionCard .rc-price{text-align:right}
+  #regionCard .rc-price .amt{display:block;font-family:"JetBrains Mono",monospace;font-size:18px;font-weight:650;color:var(--text);letter-spacing:-.04em}
+  #regionCard .rc-price span:last-child{display:block;font-size:9px;color:var(--muted-2);text-transform:uppercase;letter-spacing:.08em;margin-top:3px}
+  #regionCard .rc-actions{margin-top:14px;display:flex;gap:10px;align-items:center}
   .btn-invade{
-    background:linear-gradient(180deg,#ff8a3d,#ff6a1f);color:#180a00;border:none;
-    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;
-    padding:10px 18px;border-radius:7px;cursor:pointer;letter-spacing:.03em;
-    box-shadow:0 4px 14px rgba(255,122,41,.25);
+    min-height:42px;background:var(--text);color:#0a0b0d;border:1px solid #fff;border-radius:10px;
+    font-weight:700;font-size:12px;padding:0 16px;cursor:pointer;letter-spacing:-.01em;
+    box-shadow:0 8px 22px rgba(0,0,0,.18);transition:transform .15s ease,background .15s ease,box-shadow .15s ease
   }
-  .btn-invade:hover{filter:brightness(1.08);}
-  .btn-invade:active{transform:translateY(1px);}
-  .rc-hint{font-size:10.5px;color:var(--muted);}
-  #regionCard.placeholder{color:var(--muted);font-size:12px;text-align:center;padding:14px 10px;}
-  .dept-history{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;}
-  .dept-history h4{
-    margin:0 0 8px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.05em;
-    color:var(--muted);font-weight:400;text-transform:uppercase;
-  }
-  .dept-history-list{max-height:220px;overflow-y:auto;}
+  .btn-invade:hover{background:#fff;transform:translateY(-1px);box-shadow:0 12px 30px rgba(0,0,0,.26)}
+  .btn-invade:active{transform:translateY(0)}
+  .btn-invade:disabled{opacity:.55;cursor:not-allowed;transform:none}
+  .dept-history{margin-top:16px;border-top:1px solid var(--border-soft);padding-top:13px}
+  .dept-history h4{margin:0 0 4px;font-size:10px;letter-spacing:.08em;color:var(--muted-2);font-weight:700;text-transform:uppercase}
+  .dept-history-list{max-height:205px;overflow:auto}
 
-  /* ---------- Claim modal ---------- */
-  .overlay{
-    position:fixed;inset:0;background:rgba(4,5,8,.72);backdrop-filter:blur(2px);
-    display:none;align-items:center;justify-content:center;z-index:50;padding:16px;
+  .france-cta{
+    width:100%;min-height:64px;border:1px solid var(--brand-border);border-radius:14px;background:linear-gradient(90deg,rgba(255,107,44,.10),rgba(255,107,44,.035));
+    display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 18px 0 20px;color:var(--text);cursor:pointer;text-align:left;transition:.18s ease
   }
-  .overlay.open{display:flex;}
-  .modal{
-    width:100%;max-width:380px;background:var(--panel);border:1px solid var(--border);
-    border-radius:12px;padding:20px;
-  }
-  .modal h3{font-family:'Bebas Neue',sans-serif;font-size:20px;margin:0 0 4px;letter-spacing:.04em;}
-  .modal .modal-sub{font-size:11.5px;color:var(--muted);margin-bottom:14px;}
-  .modal label{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:12px 0 7px;}
-  .modal input{
-    width:100%;background:#0c0e13;border:1px solid var(--border);border-radius:7px;
-    padding:11px 10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:16px;
-  }
-  .modal input:focus{outline:none;border-color:var(--brand);}
-  .modal .modal-actions{display:flex;gap:10px;margin-top:16px;}
-  .btn-ghost{
-    flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);
-    padding:10px;border-radius:7px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;
-  }
-  .modal .btn-invade{flex:1.4;}
-  .modal .price-line{font-size:11.5px;color:var(--muted);margin-top:2px;}
-  .modal .price-line b{color:var(--gold);}
-  .color-swatch{
-    width:38px;height:38px;border-radius:8px;cursor:pointer;border:2px solid transparent;
-    padding:0;transition:transform .1s ease;
-  }
-  .color-swatch:hover{transform:translateY(-1px);}
-  .color-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15);}
+  .france-cta:hover{border-color:rgba(255,107,44,.45);background:linear-gradient(90deg,rgba(255,107,44,.14),rgba(255,107,44,.05));transform:translateY(-1px)}
+  .france-cta-copy{display:flex;flex-direction:column;gap:4px}
+  .france-cta-title{font-size:12px;font-weight:700;color:#ffd5c5}
+  .france-cta-sub{font-size:10.5px;color:#9e7668}
+  .france-cta-price{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:650;color:#fff;white-space:nowrap}
+  .france-cta-price::after{content:"→";font-family:Inter,sans-serif;color:var(--brand);font-size:16px}
 
-  footer.note{margin-top:18px;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.6;}
-  footer.note a{color:var(--brand);}
+  .rules{padding:15px 16px 17px;color:var(--muted);font-size:11.5px;line-height:1.7}
+  .rules strong{color:var(--text-2);font-weight:620}
+  .rule-line{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-soft)}
+  .rule-line:last-child{border-bottom:0;padding-bottom:0}
+  .rule-index{width:18px;height:18px;flex:none;border-radius:6px;border:1px solid var(--border);display:grid;place-items:center;color:var(--muted-2);font-size:9px;font-family:"JetBrains Mono",monospace;margin-top:1px}
 
-  .site-footer-links{
-    margin-top:10px;border-top:1px solid var(--border);padding-top:10px;
-    display:flex;justify-content:center;align-items:center;gap:10px;
-    font-size:11px;
-  }
-  .footer-link{
-    background:none;border:none;color:var(--muted);cursor:pointer;
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;
-    text-transform:uppercase;padding:4px 2px;
-  }
-  .footer-link:hover{color:var(--brand);text-decoration:underline;}
-  .footer-sep{color:var(--border);}
+  .site-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:24px;padding:18px 2px;color:var(--muted-2);font-size:11px;border-top:1px solid var(--border-soft)}
+  .footer-links{display:flex;align-items:center;gap:16px}
+  .footer-link{background:none;border:0;color:var(--muted);padding:0;cursor:pointer;font-size:11px;transition:color .15s ease}
+  .footer-link:hover{color:var(--text)}
 
-  .share-modal{max-width:360px;}
-  .share-canvas-wrap{
-    display:flex;justify-content:center;margin:14px 0;
-    background:#000;border-radius:12px;border:1px solid var(--border);overflow:hidden;
-  }
-  #shareCanvas{width:100%;max-width:220px;height:auto;display:block;}
+  .overlay{position:fixed;inset:0;background:rgba(4,5,7,.78);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .overlay.open{display:flex;animation:fadeOverlay .16s ease}
+  @keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
+  .modal{width:100%;max-width:440px;background:#111318;border:1px solid #292d35;border-radius:18px;padding:22px;box-shadow:0 34px 100px rgba(0,0,0,.5)}
+  .modal h3{font-size:18px;margin:0 0 6px;letter-spacing:-.025em;font-weight:700}
+  .modal .modal-sub{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:20px}
+  .modal label{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:14px 0 7px}
+  .modal input{width:100%;height:44px;background:#0b0d10;border:1px solid var(--border);border-radius:10px;padding:0 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
+  .modal input:focus{border-color:rgba(255,107,44,.55);box-shadow:0 0 0 3px rgba(255,107,44,.08)}
+  .modal .modal-actions{display:flex;gap:10px;margin-top:18px}
+  .modal .price-line{font-size:11px;color:var(--muted);margin-top:4px}
+  .modal .price-line b{font-family:"JetBrains Mono",monospace;color:var(--text);font-weight:650}
+  .btn-ghost{min-height:42px;flex:1;background:transparent;border:1px solid var(--border);color:var(--text-2);padding:0 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:600;transition:.15s ease}
+  .btn-ghost:hover{background:var(--surface-3);border-color:#343841;color:#fff}
+  .color-swatch{width:34px;height:34px;border-radius:9px;cursor:pointer;border:2px solid transparent;padding:0;transition:transform .12s ease,box-shadow .12s ease}
+  .color-swatch:hover{transform:translateY(-1px)}
+  .color-swatch.selected{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.09)}
+  .share-modal{max-width:390px}
+  .share-canvas-wrap{display:flex;justify-content:center;margin:16px 0;background:#07080a;border-radius:13px;border:1px solid var(--border);overflow:hidden}
+  #shareCanvas{width:100%;max-width:210px;height:auto;display:block}
 
-  ::-webkit-scrollbar{width:7px;}
-  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#2b2f36;border-radius:999px}
 
-  .conquer-france-bar{
-    width:100%;margin:10px 0 0;padding:12px 16px;
-    background:linear-gradient(180deg, rgba(255,122,41,.14), rgba(255,122,41,.05));
-    border:1.5px solid rgba(255,122,41,.6);border-radius:10px;
-    color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;
-    font-size:14px;letter-spacing:.02em;cursor:pointer;text-align:center;
-    box-shadow:0 0 18px rgba(255,122,41,.25);
-    animation:conquerPulse 3s ease-in-out infinite;
+  @media (max-width:1180px){
+    .app-grid{grid-template-columns:240px minmax(0,1fr)}
+    .side-stack.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
   }
-  .conquer-france-bar:hover{filter:brightness(1.12);}
-  @keyframes conquerPulse{
-    0%,100%{ box-shadow:0 0 12px rgba(255,122,41,.2); }
-    50%{ box-shadow:0 0 26px rgba(255,122,41,.45); }
+  @media (max-width:900px){
+    .shell{padding:0 16px 24px}
+    .topbar{margin-bottom:24px}
+    .page-intro{align-items:flex-start;flex-direction:column}
+    .intro-badge{display:none}
+    .metric-grid{grid-template-columns:repeat(2,1fr)}
+    .app-grid{grid-template-columns:1fr}
+    .map-column{order:-1}
+    .side-stack.right{grid-column:auto;display:flex}
+    .map-stage{min-height:450px;padding-left:18px;padding-right:18px}
   }
-  @media (prefers-reduced-motion: reduce){
-    .conquer-france-bar{ animation:none; }
+  @media (max-width:560px){
+    .shell{padding:0 12px 20px}
+    .topbar{height:64px;margin-bottom:20px}
+    .brand-word{font-size:15px}
+    .page-intro h1{font-size:31px}
+    .page-intro p{font-size:13px}
+    .metric-grid{gap:8px}
+    .metric{min-height:80px;padding:14px}
+    .metric-value{font-size:17px}
+    .map-panel .map-head{flex-direction:column;padding:15px}
+    .map-stage{min-height:390px;padding:12px 8px 4px}
+    svg#fr-map{max-width:450px}
+    #regionCard{padding:16px}
+    #regionCard .rc-top{gap:12px}
+    .france-cta{padding:14px 15px;align-items:flex-start;min-height:0}
+    .france-cta-sub{max-width:210px}
+    .site-footer{align-items:flex-start;flex-direction:column-reverse}
+    .footer-links{gap:12px;flex-wrap:wrap}
+    .live-chip{padding:0 10px}
   }
+  @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <div class="topbar">
-    <div class="brand">
-      <div class="mark">TERTERR<span>.COM</span></div>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="TERTERR accueil">
+      <span class="brand-symbol">T</span>
+      <span class="brand-word">terterr<span>.com</span></span>
+    </a>
+    <div class="top-actions">
+      <div class="live-chip"><span class="dot"></span><span><strong id="statOnline">1</strong> en ligne</span></div>
     </div>
-    <div class="stats-center">
-      <div class="stat"><b id="statVisitors">0</b><span>visiteurs</span></div>
-      <div class="stat money"><b id="statPlundered">0 €</b><span>pillés</span></div>
-      <div class="stat"><b id="statClaimed">0/96</b><span>revendiquées</span></div>
-    </div>
-    <div class="right-group">
-      <div class="demo-pill" style="display:flex;align-items:center;gap:6px;color:var(--text);"><span class="dot"></span><span id="statOnline">1</span> en ligne</div>
-    </div>
-  </div>
+  </header>
 
-  <div class="grid">
-
-    <!-- LEFT: war report + leaderboard -->
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <div class="panel">
-        <h2><span class="dot"></span>Rapport de guerre</h2>
-        <div id="warReport"></div>
-      </div>
-      <div class="panel">
-        <h2 style="color:var(--gold);">👑 Puissances</h2>
-        <div id="leaderboard"></div>
-      </div>
+  <section class="page-intro">
+    <div>
+      <div class="eyebrow">Territory marketplace · France</div>
+      <h1>Prends ta place sur la carte.</h1>
+      <p>96 départements. Un propriétaire par territoire. Prends un département, affiche ton nom et ton lien, puis laisse le marché décider qui le gardera.</p>
     </div>
+    <div class="intro-badge"><strong>Temps réel</strong> · synchronisé pour tous</div>
+  </section>
 
-    <!-- CENTER: map -->
-    <div class="map-column">
-    <div class="panel map-panel">
-      <div class="map-head">
-        <div>
-          <h1>France — 96 départements</h1>
-          <div class="sub">Clique sur un département pour l'envahir.</div>
+  <section class="metric-grid" aria-label="Statistiques">
+    <div class="metric"><span class="metric-label">Visiteurs</span><div><span class="metric-value" id="statVisitors">0</span><span class="metric-meta">total</span></div></div>
+    <div class="metric"><span class="metric-label">Volume</span><div><span class="metric-value money" id="statPlundered">0 €</span><span class="metric-meta">échangé</span></div></div>
+    <div class="metric"><span class="metric-label">Territoires pris</span><div><span class="metric-value" id="statClaimed">0/96</span><span class="metric-meta">France</span></div></div>
+    <div class="metric"><span class="metric-label">Marché</span><div><span class="metric-value" style="font-family:Inter,sans-serif;font-size:17px;color:var(--success);letter-spacing:-.02em">Ouvert</span><span class="metric-meta">24/7</span></div></div>
+  </section>
+
+  <main class="app-grid">
+    <aside class="side-stack left">
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-kicker">Activité</div><h2>Dernières conquêtes</h2></div><div class="section-status"><span class="dot"></span>live</div></div>
+        <div class="panel-body"><div id="warReport"></div></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-kicker">Classement</div><h2>Top propriétaires</h2></div><span class="panel-kicker">Top 10</span></div>
+        <div class="panel-body"><div id="leaderboard"></div></div>
+      </section>
+    </aside>
+
+    <section class="map-column">
+      <section class="panel map-panel">
+        <div class="map-head">
+          <div class="map-title"><h2>France métropolitaine</h2><div class="sub">Sélectionne un département pour voir son prix et son historique.</div></div>
+          <div class="legend"><span class="legend-item"><span class="sw" style="background:var(--unclaimed)"></span>Disponible</span><span class="legend-item"><span class="sw" style="background:var(--brand)"></span>Détenu</span></div>
         </div>
-        <div class="legend">
-          <span><span class="sw" style="background:var(--unclaimed);"></span>non réclamée</span>
-          <span><span class="sw" style="background:var(--brand);"></span>réclamée</span>
-        </div>
-      </div>
-      <div id="mapholder" style="position:relative;">
-        <div class="zoom-controls">
-          <button class="zoom-btn" id="zoomInBtn" title="Zoomer" type="button">+</button>
-          <button class="zoom-btn" id="zoomOutBtn" title="Dézoomer" type="button">−</button>
-          <button class="zoom-btn" id="zoomResetBtn" title="Réinitialiser la vue" type="button">⤾</button>
-        </div>
-        <svg id="fr-map" viewBox="105 18 568 567" xmlns="http://www.w3.org/2000/svg">
+        <div class="map-stage">
+          <div id="mapholder">
+            <div class="zoom-controls">
+              <button class="zoom-btn" id="zoomInBtn" title="Zoomer" type="button" aria-label="Zoomer">+</button>
+              <button class="zoom-btn" id="zoomOutBtn" title="Dézoomer" type="button" aria-label="Dézoomer">−</button>
+              <button class="zoom-btn" id="zoomResetBtn" title="Réinitialiser la vue" type="button" aria-label="Réinitialiser">↺</button>
+            </div>
+<svg id="fr-map" viewBox="105 18 568 567" xmlns="http://www.w3.org/2000/svg">
 <g class="region region-11" data-nom="Île-de-France" data-code_insee="11">
 		<path id="dept-75" class="dept region-11 departement departement-75 departement-paris" data-nom="Paris" data-numerodepartement="75" d="M396.8 154.7L393.6 154.2L391.1 155.9L394.1 159.4L399.4 159.3L397.6 157.4L396.8 154.7Z"/>
 		<path id="dept-77" class="dept region-11 departement departement-77 departement-seine-et-marne" data-nom="Seine-et-Marne" data-numerodepartement="77" d="m441.1 176.1l-2.9 0.8 0.4 8.5-15.4 3-0.2 5.8-3.9 5.4-11.2 2.7-9.2-0.7 2.6-1.5 0.6-2.7-4.2-4.3-0.7-3.1 3.4-4.8 4-17.2-0.5-1 1.1-4.1-0.3-2.9v-0.1l-1.3-4.7 1.3-2.5-1.7-5.1 0.1-0.1 1.7-2.3-0.2-2 6.9 1 2-2.2 2.5 1.6 8.1-2.9 2.6 0.7 1.8 2.5-0.7 2.8 3.9 4.2 9.3 6-0.4 2-2.6 2.2 3.5 8.3 2.6 1.7z"/>
@@ -446,105 +443,86 @@
 		<path id="dept-2B" class="dept region-94 departement departement-2B departement-haute-corse" data-nom="Haute-Corse" data-numerodepartement="2B" d="m643.7 551.5v1l-3.2 1.7-3.8-0.5-3.7-11-2.7-1.1-0.5-3.2-6-5.9-6-3.4-1.2-3.5-13.6-2.1v-0.2l3.9-5-0.3-3.4 2.2-2.8 2.8-0.3 0.9-2.9 10.7-4.2 3.5-4.9 8.6 1.3-0.5-17.4 2.4-2 2.9 1.1 0.2 0.9 1.5 8.2-0.5 10.6 4 5.6 3.8 26-5.4 11.9v5.5z"/>
 	</g>
 <g id="icons-layer"></g>        </svg>
-      </div>
-
-      <div id="regionCard" class="placeholder">Sélectionne un département sur la carte pour voir son prix d'invasion.</div>
-    </div>
-
-    <button id="btnConquerFrance" class="conquer-france-bar" type="button">
-      🌍 CONQUÉRIR LA FRANCE ENTIÈRE POUR <span id="francePriceDisplay">250 €</span>
-    </button>
-    </div>
-
-    <!-- RIGHT: hot regions + info -->
-    <div style="display:flex;flex-direction:column;gap:14px;">
-      <div class="panel">
-        <h2>🔥 Terrain chaud</h2>
-        <div id="hotList"></div>
-      </div>
-      <div class="panel">
-        <h2>ℹ️ Règles</h2>
-        <div style="font-size:11.5px;color:var(--muted);line-height:1.7;">
-          Chaque département part à son prix de base. Clique <b style="color:var(--text);">ENVAHIR</b>, indique ton nom et confirme : tu es redirigé·e vers un paiement sécurisé. Une fois le paiement validé, tu deviens propriétaire et le prix grimpe de <b style="color:var(--text);">+40%</b> pour le prochain envahisseur. Le classement des puissances compte le nombre de départements détenus, puis le total dépensé. <b style="color:var(--text);">Tout le monde voit la même carte en direct.</b>
+          </div>
         </div>
-      </div>
-    </div>
+        <div id="regionCard" class="placeholder">Sélectionne un département pour afficher les détails.</div>
+      </section>
 
-  </div>
+      <button id="btnConquerFrance" class="france-cta" type="button">
+        <span class="france-cta-copy"><span class="france-cta-title">Prendre le contrôle de toute la France</span><span class="france-cta-sub">Une seule transaction · les 96 départements deviennent tiens</span></span>
+        <span class="france-cta-price" id="francePriceDisplay">250 €</span>
+      </button>
+    </section>
 
-  <footer class="site-footer-links">
-    <button class="footer-link" data-info="about">À propos</button>
-    <span class="footer-sep">·</span>
-    <button class="footer-link" data-info="refund">Remboursement</button>
-    <span class="footer-sep">·</span>
-    <button class="footer-link" data-info="contact">Contact</button>
+    <aside class="side-stack right">
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-kicker">Marché</div><h2>Territoires les plus chers</h2></div><span class="panel-kicker">Top 5</span></div>
+        <div class="panel-body"><div id="hotList"></div></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><div><div class="panel-kicker">Fonctionnement</div><h2>Règles du marché</h2></div></div>
+        <div class="rules">
+          <div class="rule-line"><span class="rule-index">01</span><span>Choisis un département et finalise le paiement sécurisé.</span></div>
+          <div class="rule-line"><span class="rule-index">02</span><span>Ton <strong>nom, ta couleur et ton lien</strong> apparaissent immédiatement sur la carte.</span></div>
+          <div class="rule-line"><span class="rule-index">03</span><span>Après chaque conquête, le prix du territoire augmente de <strong>40 %</strong>.</span></div>
+          <div class="rule-line"><span class="rule-index">04</span><span>Le classement privilégie les départements détenus, puis le volume dépensé.</span></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>© 2026 TERTERR · Produit numérique de divertissement</span>
+    <div class="footer-links"><button class="footer-link" data-info="about">À propos</button><button class="footer-link" data-info="refund">Remboursement</button><button class="footer-link" data-info="contact">Contact</button></div>
   </footer>
-
 </div>
 
-<!-- Claim modal -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h3 id="modalTitle">Envahir —</h3>
-    <div class="modal-sub">Deviens le/la propriétaire de ce département. Représente ton terter.</div>
-    <label for="inpName">Ton nom / ton site *</label>
-    <input id="inpName" type="text" placeholder="ex : MonSite.fr" maxlength="40" required>
-    <label for="inpUrl" style="margin-top:14px;">Lien de ton site (backlink) *</label>
+    <h3 id="modalTitle">Prendre le territoire</h3>
+    <div class="modal-sub">Ton nom, ton lien et ta couleur seront visibles publiquement sur la carte.</div>
+    <label for="inpName">Nom ou site</label>
+    <input id="inpName" type="text" placeholder="MonSite.fr" maxlength="40" required>
+    <label for="inpUrl">Lien du site</label>
     <input id="inpUrl" type="text" placeholder="https://monsite.fr" required>
-    <label style="margin-top:14px;">Couleur sur la carte *</label>
-    <div id="colorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
-    <div class="price-line" style="margin-top:14px;">Prix de l'invasion : <b id="modalPrice">0 €</b></div>
-    <div class="modal-actions">
-      <button class="btn-invade" id="btnConfirm" style="flex:1;">Confirmer l'invasion</button>
-    </div>
+    <label>Couleur du territoire</label>
+    <div id="colorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div>
+    <div class="price-line" style="margin-top:14px">Prix actuel : <b id="modalPrice">0 €</b></div>
+    <div class="modal-actions"><button class="btn-invade" id="btnConfirm" style="width:100%">Continuer vers le paiement</button></div>
   </div>
 </div>
 
-<!-- France conquest modal -->
 <div class="overlay" id="franceOverlay">
   <div class="modal">
-    <h3>🌍 Conquête de la France</h3>
-    <div class="modal-sub">Tous les départements deviennent tiens en une seule fois. Chaque ancien propriétaire garde sa place dans l'historique. Le prix double après chaque conquête totale.</div>
-    <label for="inpFranceName">Ton nom / ton site *</label>
-    <input id="inpFranceName" type="text" placeholder="ex : MonSite.fr" maxlength="40" required>
-    <label for="inpFranceUrl" style="margin-top:14px;">Lien de ton site (backlink) *</label>
+    <h3>Prendre toute la France</h3>
+    <div class="modal-sub">Les 96 départements deviennent tiens en une seule fois. L'historique des propriétaires précédents reste conservé et le prix de la conquête totale double après chaque achat.</div>
+    <label for="inpFranceName">Nom ou site</label>
+    <input id="inpFranceName" type="text" placeholder="MonSite.fr" maxlength="40" required>
+    <label for="inpFranceUrl">Lien du site</label>
     <input id="inpFranceUrl" type="text" placeholder="https://monsite.fr" required>
-    <label style="margin-top:14px;">Couleur sur la carte *</label>
-    <div id="franceColorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
-    <div class="price-line" style="margin-top:14px;">Prix de la conquête totale : <b id="francePriceModal">250 €</b></div>
-    <div class="modal-actions">
-      <button class="btn-invade" id="btnConfirmFrance" style="flex:1;">🌍 Conquérir la France pour <span id="btnFrancePrice">250 €</span></button>
-    </div>
+    <label>Couleur des territoires</label>
+    <div id="franceColorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px"></div>
+    <div class="price-line" style="margin-top:14px">Prix actuel : <b id="francePriceModal">250 €</b></div>
+    <div class="modal-actions"><button class="btn-invade" id="btnConfirmFrance" style="width:100%">Continuer · <span id="btnFrancePrice">250 €</span></button></div>
   </div>
 </div>
 
-<!-- Share / success modal (après un paiement réussi) -->
 <div class="overlay" id="shareOverlay">
   <div class="modal share-modal">
-    <h3>🎉 Félicitations !</h3>
-    <div class="modal-sub" id="shareSubtitle">C'est fait.</div>
-    <div class="share-canvas-wrap">
-      <canvas id="shareCanvas" width="1080" height="1920"></canvas>
-    </div>
-    <div class="modal-actions" style="flex-direction:column;gap:10px;">
-      <button class="btn-invade" id="btnShareNative" style="width:100%;">📤 Partager en story</button>
-      <button class="btn-ghost" id="btnShareDownload" style="width:100%;">⬇ Télécharger l'image</button>
-      <button class="btn-ghost" id="btnShareClose" style="width:100%;">Fermer</button>
-    </div>
+    <h3>Territoire sécurisé.</h3>
+    <div class="modal-sub" id="shareSubtitle">Ta conquête est maintenant visible sur la carte.</div>
+    <div class="share-canvas-wrap"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>
+    <div class="modal-actions" style="flex-direction:column;gap:9px"><button class="btn-invade" id="btnShareNative" style="width:100%">Partager</button><button class="btn-ghost" id="btnShareDownload" style="width:100%">Télécharger l'image</button><button class="btn-ghost" id="btnShareClose" style="width:100%">Fermer</button></div>
   </div>
 </div>
 
-<!-- Info modal (À propos / Remboursement / Contact) -->
 <div class="overlay" id="infoOverlay">
   <div class="modal">
     <h3 id="infoTitle">—</h3>
-    <div id="infoBody" style="font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px;"></div>
-    <div class="modal-actions" style="margin-top:16px;">
-      <button class="btn-ghost" id="btnInfoClose" style="flex:1;">Fermer</button>
-    </div>
+    <div id="infoBody" style="font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px"></div>
+    <div class="modal-actions"><button class="btn-ghost" id="btnInfoClose" style="width:100%">Fermer</button></div>
   </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
@@ -811,7 +789,7 @@
     const card = document.getElementById('regionCard');
     if(!selected){
       card.className = 'placeholder';
-      card.innerHTML = "Sélectionne un département sur la carte pour voir son prix d'invasion.";
+      card.innerHTML = "Sélectionne un département pour afficher les détails.";
       return;
     }
     const code = selected, s = state[code];
@@ -828,7 +806,7 @@
         </div>
       </div>
       <div class="rc-actions">
-        <button class="btn-invade" id="btnOpenInvade" style="width:100%;">⚔ ENVAHIR ${DEPT_NAMES[code].toUpperCase()} POUR ${fmt(s.price)}</button>
+        <button class="btn-invade" id="btnOpenInvade" style="width:100%;">PRENDRE ${DEPT_NAMES[code].toUpperCase()} · ${fmt(s.price)} →</button>
       </div>
       <div class="dept-history">
         <h4>Historique des invasions</h4>
@@ -1449,7 +1427,7 @@
     }catch(e){
       console.error(e);
       alert("Impossible de démarrer le paiement pour le moment. Réessaie.");
-      btn.disabled = false; btn.textContent = "🌍 Conquérir la France pour " + fmt(francePrice);
+      btn.disabled = false; btn.textContent = "Continuer · " + fmt(francePrice);
     }
   };
 
