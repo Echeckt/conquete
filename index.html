@@ -509,6 +509,21 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   .dominance-card strong{display:block;font-size:20px;letter-spacing:-.04em;color:#f0ece3;margin-bottom:7px}
   .dominance-card p{margin:0;color:#81796c;font-size:11.5px;line-height:1.65}
 
+
+  /* Ajustements demandés : cible sous la carte + CTA national plus horizontal */
+  .battle-map-shell{display:flex;flex-direction:column;gap:12px}
+  #btnConquerFrance.france-cta{
+    min-height:78px;height:auto;padding:12px 14px;gap:10px;align-items:center;
+  }
+  #btnConquerFrance .france-cta-icon{width:34px;height:34px;min-width:34px;font-size:18px;margin:0}
+  #btnConquerFrance .france-cta-copy{gap:3px;min-width:0}
+  #btnConquerFrance .france-cta-overline{font-size:7px;letter-spacing:.12em;white-space:nowrap}
+  #btnConquerFrance .france-cta-title{font-size:14px;line-height:1.08;letter-spacing:-.015em}
+  #btnConquerFrance .france-cta-sub{display:none}
+  #btnConquerFrance .france-cta-price{font-size:15px;gap:6px;flex:none}
+  .battle-map-shell .selected-target-frame #regionCard{min-height:150px}
+  .battle-map-shell .selected-target-frame #regionCard.placeholder{min-height:150px}
+
   @media (max-width:1380px){
     .hero-command-grid{grid-template-columns:280px minmax(0,1fr) 280px}
     .battle-map-shell .map-stage{min-height:670px}
@@ -634,16 +649,6 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
     <span class="france-cta-price" id="francePriceDisplay">250 €</span>
   </button>
 
-  <section class="selected-target-frame panel">
-    <div class="panel-head">
-      <div>
-        <div class="panel-kicker">Territoire ciblé</div>
-        <h2>Préparation de l’invasion</h2>
-      </div>
-      <span class="panel-kicker">FR-96</span>
-    </div>
-    <div id="regionCard" class="placeholder">Sélectionne une cible sur la carte pour préparer l’offensive.</div>
-  </section>
 </aside>
 
       
@@ -786,6 +791,17 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 <g id="icons-layer"></g>        </svg>
       </div>
     </div>
+  </section>
+
+  <section class="selected-target-frame panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-kicker">Territoire ciblé</div>
+        <h2>Préparation de l’invasion</h2>
+      </div>
+      <span class="panel-kicker">FR-96</span>
+    </div>
+    <div id="regionCard" class="placeholder">Sélectionne une cible sur la carte pour préparer l’offensive.</div>
   </section>
 </section>
 
