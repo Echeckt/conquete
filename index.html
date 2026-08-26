@@ -77,8 +77,9 @@
   .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:10px;align-items:start;}
   @media (max-width:1100px){
     .grid{grid-template-columns:1fr;}
-    .grid > .map-panel{order:-1;}
+    .grid > .map-column{order:-1;}
   }
+  .map-column{display:flex;flex-direction:column;gap:10px;}
   @media (max-width:700px){
     .topbar{
       position:relative;flex-direction:column;align-items:center;
@@ -253,7 +254,7 @@
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
   .conquer-france-bar{
-    width:100%;margin:12px 0;padding:12px 16px;
+    width:100%;margin:10px 0 0;padding:12px 16px;
     background:linear-gradient(180deg, rgba(255,122,41,.14), rgba(255,122,41,.05));
     border:1.5px solid rgba(255,122,41,.6);border-radius:10px;
     color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700;
@@ -288,10 +289,6 @@
     </div>
   </div>
 
-  <button id="btnConquerFrance" class="conquer-france-bar" type="button">
-    🌍 CONQUÉRIR LA FRANCE ENTIÈRE — <span id="francePriceDisplay">500 €</span>
-  </button>
-
   <div class="grid">
 
     <!-- LEFT: war report + leaderboard -->
@@ -307,6 +304,7 @@
     </div>
 
     <!-- CENTER: map -->
+    <div class="map-column">
     <div class="panel map-panel">
       <div class="map-head">
         <div>
@@ -453,6 +451,11 @@
       <div id="regionCard" class="placeholder">Sélectionne un département sur la carte pour voir son prix d'invasion.</div>
     </div>
 
+    <button id="btnConquerFrance" class="conquer-france-bar" type="button">
+      🌍 CONQUÉRIR LA FRANCE ENTIÈRE — <span id="francePriceDisplay">250 €</span>
+    </button>
+    </div>
+
     <!-- RIGHT: hot regions + info -->
     <div style="display:flex;flex-direction:column;gap:14px;">
       <div class="panel">
@@ -508,9 +511,9 @@
     <input id="inpFranceUrl" type="text" placeholder="https://monsite.fr" required>
     <label style="margin-top:14px;">Couleur sur la carte *</label>
     <div id="franceColorSwatches" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
-    <div class="price-line" style="margin-top:14px;">Prix de la conquête totale : <b id="francePriceModal">500 €</b></div>
+    <div class="price-line" style="margin-top:14px;">Prix de la conquête totale : <b id="francePriceModal">250 €</b></div>
     <div class="modal-actions">
-      <button class="btn-invade" id="btnConfirmFrance" style="flex:1;">🌍 Conquérir la France pour <span id="btnFrancePrice">500 €</span></button>
+      <button class="btn-invade" id="btnConfirmFrance" style="flex:1;">🌍 Conquérir la France pour <span id="btnFrancePrice">250 €</span></button>
     </div>
   </div>
 </div>
@@ -1378,7 +1381,7 @@
   }
 
   // ---- Conquête de la France entière ----
-  let francePrice = 500;
+  let francePrice = 250;
 
   function renderFrancePrice(){
     const txt = fmt(francePrice);
