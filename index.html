@@ -80,7 +80,7 @@
   .page-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin:0 0 24px}
   .eyebrow{display:flex;align-items:center;gap:8px;color:var(--brand);font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
   .eyebrow::before{content:"";width:18px;height:1px;background:var(--brand)}
-  .page-intro h1{margin:0;font-size:clamp(30px,4vw,48px);line-height:1.02;letter-spacing:-.045em;font-weight:710;max-width:760px}
+  .page-intro h1{margin:0;font-size:clamp(30px,4vw,48px);line-height:1.02;letter-spacing:-.045em;font-weight:710;max-width:820px}
   .page-intro p{margin:10px 0 0;max-width:680px;color:var(--muted);font-size:14px;line-height:1.65}
   .intro-badge{flex:0 0 auto;color:var(--muted);font-size:12px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface)}
   .intro-badge strong{color:var(--text-2);font-weight:650}
@@ -314,7 +314,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 .eyebrow{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.19em;color:#aa7b65;margin-bottom:14px}
 .eyebrow:before{width:28px;background:var(--brand);box-shadow:0 0 12px rgba(255,100,38,.3)}
 .page-intro h1{font-size:clamp(40px,5.4vw,76px);max-width:930px;line-height:.94;letter-spacing:-.061em;font-weight:720}
-.page-intro p{max-width:760px;margin-top:17px;font-size:14px;line-height:1.7;color:#918b80}
+.page-intro p{max-width:820px;margin-top:17px;font-size:14px;line-height:1.7;color:#918b80}
 .intro-signals{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:19px;color:#625d54;font-size:10px;font-weight:650;text-transform:uppercase;letter-spacing:.055em}
 .intro-signals span{display:flex;align-items:center;gap:7px}
 .intro-signals span+span:before{content:"/";margin-right:11px;color:#3d3933}
@@ -422,7 +422,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   .top-actions{flex:0 0 auto}
 
   .hero-command-grid{
-    display:grid;grid-template-columns:320px minmax(0,1fr) 320px;gap:14px;align-items:start;
+    display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:14px;align-items:start;
     margin-bottom:14px;
   }
   .command-panel, .intel-stack{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -462,7 +462,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   .battle-map-shell .map-head{padding:18px 22px 16px;background:linear-gradient(90deg,rgba(255,100,38,.05),transparent 52%)}
   .battle-map-shell .map-title h2{font-size:17px}
   .battle-map-shell .map-title .sub{font-size:12px}
-  .battle-map-shell .map-stage{min-height:720px;padding:20px 36px 14px;overflow:hidden;background-color:#080807;background-image:
+  .battle-map-shell .map-stage{min-height:760px;padding:20px 36px 14px;overflow:hidden;background-color:#080807;background-image:
       linear-gradient(rgba(190,170,138,.035) 1px,transparent 1px),
       linear-gradient(90deg,rgba(190,170,138,.035) 1px,transparent 1px),
       radial-gradient(circle at center,rgba(255,100,38,.09),rgba(255,100,38,.03) 34%,transparent 64%);
@@ -476,7 +476,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
     border-radius:50%;border:1px solid rgba(255,120,73,.12);
     box-shadow:0 0 0 56px rgba(255,120,73,.03),0 0 0 112px rgba(255,120,73,.015);
   }
-  .battle-map-shell svg#fr-map{position:relative;z-index:1;max-width:760px;width:100%;filter:drop-shadow(0 32px 62px rgba(0,0,0,.56)) drop-shadow(0 0 12px rgba(255,100,38,.08))}
+  .battle-map-shell svg#fr-map{position:relative;z-index:1;max-width:820px;width:100%;filter:drop-shadow(0 32px 62px rgba(0,0,0,.56)) drop-shadow(0 0 12px rgba(255,100,38,.08))}
   .battle-map-shell svg#fr-map path{stroke:#070605;stroke-width:1.28}
   .battle-map-shell svg#fr-map .dept{fill:#1c1916}
   .battle-map-shell svg#fr-map .dept:hover{filter:brightness(1.5) drop-shadow(0 0 5px rgba(255,100,38,.32));stroke:#87624d}
@@ -510,7 +510,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   .dominance-card p{margin:0;color:#81796c;font-size:11.5px;line-height:1.65}
 
   @media (max-width:1380px){
-    .hero-command-grid{grid-template-columns:290px minmax(0,1fr) 290px}
+    .hero-command-grid{grid-template-columns:280px minmax(0,1fr) 280px}
     .battle-map-shell .map-stage{min-height:670px}
   }
   @media (max-width:1180px){
@@ -541,6 +541,39 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
     .metric{min-height:86px;padding:13px 14px}
     .metric-value{font-size:18px}
   }
+
+  /* Header HUD — statistiques de conquête */
+  .topbar{min-height:88px;height:auto;padding:12px 0;margin-bottom:14px;gap:18px}
+  .header-war-stats{flex:1;min-width:0;display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));align-items:stretch;border-left:1px solid #29241e;border-right:1px solid #29241e}
+  .header-war-stat{min-width:0;padding:7px 16px 6px;border-right:1px solid #29241e;display:flex;flex-direction:column;justify-content:center;gap:7px}
+  .header-war-stat:last-child{border-right:0}
+  .header-war-label{font-family:"JetBrains Mono",monospace;font-size:8px;line-height:1;text-transform:uppercase;letter-spacing:.16em;color:#6e675d;white-space:nowrap}
+  .header-war-line{display:flex;align-items:baseline;gap:7px;min-width:0;white-space:nowrap}
+  .header-war-line strong{font-family:"JetBrains Mono",monospace;font-size:17px;line-height:1;font-weight:700;letter-spacing:-.045em;color:#eee9df}
+  .header-war-line strong.gold{color:#d8b46d}
+  .header-war-line span{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:8px;color:#5d574f;letter-spacing:.01em}
+  .header-war-stat.front-state .header-war-line strong{font-family:Inter,sans-serif;font-size:14px;letter-spacing:-.02em;color:var(--brand)}
+  .top-actions{gap:7px}
+  .war-state,.live-chip{height:36px;padding:0 10px;font-size:9px}
+
+  @media(max-width:1380px){
+    .header-war-stat{padding-left:11px;padding-right:11px}
+    .header-war-line strong{font-size:15px}
+    .header-war-line span{font-size:7.5px}
+    .war-state{display:none}
+  }
+  @media(max-width:1080px){
+    .topbar{flex-wrap:wrap}
+    .header-war-stats{order:3;flex-basis:100%;border-top:1px solid #29241e;border-bottom:1px solid #29241e;border-left:0;border-right:0}
+    .header-war-stat{padding-top:10px;padding-bottom:10px}
+  }
+  @media(max-width:700px){
+    .header-war-stats{grid-template-columns:repeat(2,1fr)}
+    .header-war-stat:nth-child(2){border-right:0}
+    .header-war-stat:nth-child(-n+2){border-bottom:1px solid #29241e}
+    .header-war-line span{display:none}
+    .live-chip{font-size:8px}
+  }
 </style>
 
 </head>
@@ -551,7 +584,25 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
       <span class="brand-symbol">T</span>
       <span class="brand-word">terterr<span>.com</span></span>
     </a>
-    <div class="op-center-strip"><span>THÉÂTRE D’OPÉRATIONS — FRANCE</span><span class="slashes">///</span><span>FR-96 // GRID 44.351°N, 2.213°E</span><span class="live-inline">LIVE <span class="dot" style="display:inline-block;vertical-align:middle;margin-left:4px"></span></span></div><div class="top-actions">
+    <div class="header-war-stats" aria-label="Statistiques de la conquête">
+      <div class="header-war-stat">
+        <span class="header-war-label">Combattants</span>
+        <div class="header-war-line"><strong id="statVisitors">0</strong><span>depuis le lancement</span></div>
+      </div>
+      <div class="header-war-stat">
+        <span class="header-war-label">Butin total</span>
+        <div class="header-war-line"><strong class="gold" id="statPlundered">0 €</strong><span>engagés au front</span></div>
+      </div>
+      <div class="header-war-stat">
+        <span class="header-war-label">Territoires occupés</span>
+        <div class="header-war-line"><strong id="statClaimed">0/96</strong><span>départements</span></div>
+      </div>
+      <div class="header-war-stat front-state">
+        <span class="header-war-label">État du front</span>
+        <div class="header-war-line"><strong>EN GUERRE</strong><span>aucune trêve</span></div>
+      </div>
+    </div>
+    <div class="top-actions">
       <div class="war-state"><span class="war-state-mark"></span><span>Conquête en cours</span></div>
       <div class="live-chip"><span class="dot"></span><span><strong id="statOnline">1</strong> commandant en ligne</span></div>
     </div>
@@ -758,12 +809,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 
     </section>
     
-<section class="metric-grid" aria-label="Statistiques">
-  <div class="metric"><span class="metric-label">Combattants</span><div><span class="metric-value" id="statVisitors">0</span><span class="metric-meta">en ligne maintenant</span></div></div>
-  <div class="metric"><span class="metric-label">Butin total</span><div><span class="metric-value money" id="statPlundered">0 €</span><span class="metric-meta">engagés au front</span></div></div>
-  <div class="metric"><span class="metric-label">Territoires occupés</span><div><span class="metric-value" id="statClaimed">0/96</span><span class="metric-meta">départements</span></div></div>
-  <div class="metric"><span class="metric-label">État du front</span><div><span class="metric-value" style="font-family:Inter,sans-serif;font-size:17px;color:var(--brand);letter-spacing:-.02em">EN GUERRE</span><span class="metric-meta">aucune trêve</span></div></div>
-</section>
+
 
     
 <section class="post-hero-grid">
