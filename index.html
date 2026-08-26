@@ -409,6 +409,140 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 @media(max-width:560px){.shell{padding:0 12px 22px}.topbar{height:66px}.page-intro h1{font-size:39px}.page-intro p{font-size:12.5px}.intro-signals{display:none}.metric-grid{grid-template-columns:repeat(2,1fr)}.metric:nth-child(2){border-right:0}.metric{border-bottom:1px solid #211f1a}.metric:nth-child(3),.metric:nth-child(4){border-bottom:0}.map-stage{min-height:430px;padding-left:7px;padding-right:7px}.france-cta-icon{display:none}.france-cta{padding:14px 14px 14px 17px}.france-cta-price{font-size:14px}.map-panel .map-head{padding:14px}.map-title h2{font-size:14px}}
 </style>
 
+
+<style id="operation-france-hero-refresh">
+  .op-center-strip{
+    display:flex;align-items:center;gap:18px;justify-content:center;
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:#7c7368;flex:1;padding:0 20px;text-align:center;
+  }
+  .op-center-strip .slashes{color:var(--brand)}
+  .topbar{gap:12px}
+  .topbar .brand{flex:0 0 auto}
+  .top-actions{flex:0 0 auto}
+
+  .hero-command-grid{
+    display:grid;grid-template-columns:320px minmax(0,1fr) 320px;gap:14px;align-items:start;
+    margin-bottom:14px;
+  }
+  .command-panel, .intel-stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .command-panel .panel, .intel-stack .panel{overflow:hidden}
+  .hero-intro.panel{padding:20px 20px 18px;background:
+      linear-gradient(180deg,rgba(255,100,38,.04),transparent 24%),
+      linear-gradient(180deg,#0d0d0b,#0a0a09);
+    border-color:#332b22;
+  }
+  .hero-overline{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#b47d65;display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .hero-overline:before{content:"//";color:var(--brand);letter-spacing:.05em}
+  .hero-intro h1{margin:0;font-size:clamp(44px,4.6vw,78px);line-height:.9;letter-spacing:-.07em;font-weight:780;text-transform:uppercase;color:#f1ede6}
+  .hero-intro p{margin:18px 0 0;color:#8f887e;font-size:14px;line-height:1.7}
+  .hero-facts{display:flex;flex-direction:column;gap:12px;margin:20px 0 18px;padding:0;list-style:none}
+  .hero-facts li{display:flex;align-items:flex-start;gap:9px;color:#c4a88e;font-size:11px;letter-spacing:.035em;text-transform:uppercase}
+  .hero-facts li::before{content:"◉";color:var(--brand);font-size:11px;line-height:1.15;transform:translateY(1px)}
+  .hero-utility{font-family:"JetBrains Mono",monospace;font-size:8.5px;letter-spacing:.13em;color:#665f55;text-transform:uppercase}
+
+  #btnConquerFrance.france-cta{
+    min-height:66px;justify-content:space-between;border-radius:6px;
+    box-shadow:0 18px 44px rgba(255,100,38,.12), inset 0 1px rgba(255,255,255,.08);
+  }
+  #btnConquerFrance .france-cta-overline{font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.16em;color:#ffd0bc;text-transform:uppercase}
+  #btnConquerFrance .france-cta-title{font-size:18px;letter-spacing:-.03em;color:#fff}
+  #btnConquerFrance .france-cta-sub{font-size:10px;color:#b78773;text-transform:uppercase;letter-spacing:.08em}
+  #btnConquerFrance .france-cta-price{font-size:18px}
+
+  .selected-target-frame.panel{padding:0;border-color:#3a2e23;background:linear-gradient(180deg,#0c0b0a,#090908)}
+  .selected-target-frame .panel-head{background:rgba(255,100,38,.03)}
+  .selected-target-frame .panel-head h2{font-size:13px}
+  .selected-target-frame .panel-kicker{color:#9b6b55}
+  .selected-target-frame #regionCard{border-top:0;background:transparent;min-height:240px}
+  .selected-target-frame #regionCard.placeholder{display:grid;place-items:center;min-height:240px;padding:24px;color:#7e766a}
+
+  .battle-map-shell{min-width:0}
+  .battle-map-shell .map-panel{border-color:#413427;background:linear-gradient(180deg,#0e0d0c,#090908)}
+  .battle-map-shell .map-head{padding:18px 22px 16px;background:linear-gradient(90deg,rgba(255,100,38,.05),transparent 52%)}
+  .battle-map-shell .map-title h2{font-size:17px}
+  .battle-map-shell .map-title .sub{font-size:12px}
+  .battle-map-shell .map-stage{min-height:720px;padding:20px 36px 14px;overflow:hidden;background-color:#080807;background-image:
+      linear-gradient(rgba(190,170,138,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(190,170,138,.035) 1px,transparent 1px),
+      radial-gradient(circle at center,rgba(255,100,38,.09),rgba(255,100,38,.03) 34%,transparent 64%);
+    background-size:26px 26px,26px 26px,auto;
+  }
+  .battle-map-shell .map-stage::before{content:"TACTICAL GRID / FR-96 / LIVE";top:16px;left:20px;font-size:8px;color:#5a5248}
+  .battle-map-shell .map-stage::after{background:radial-gradient(circle at center, transparent 35%, rgba(4,4,3,.28) 74%, rgba(4,4,3,.72) 100%)}
+  .battle-map-shell #mapholder{align-items:center;justify-content:center}
+  .battle-map-shell #mapholder::after{
+    content:"";position:absolute;inset:8% 10% 10%;pointer-events:none;z-index:0;
+    border-radius:50%;border:1px solid rgba(255,120,73,.12);
+    box-shadow:0 0 0 56px rgba(255,120,73,.03),0 0 0 112px rgba(255,120,73,.015);
+  }
+  .battle-map-shell svg#fr-map{position:relative;z-index:1;max-width:760px;width:100%;filter:drop-shadow(0 32px 62px rgba(0,0,0,.56)) drop-shadow(0 0 12px rgba(255,100,38,.08))}
+  .battle-map-shell svg#fr-map path{stroke:#070605;stroke-width:1.28}
+  .battle-map-shell svg#fr-map .dept{fill:#1c1916}
+  .battle-map-shell svg#fr-map .dept:hover{filter:brightness(1.5) drop-shadow(0 0 5px rgba(255,100,38,.32));stroke:#87624d}
+  .battle-map-shell svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.4;filter:brightness(1.18) drop-shadow(0 0 7px rgba(255,100,38,.4))}
+
+  .intel-stack .panel-head h2{font-size:13px}
+  .intel-stack .panel-body{padding:6px 14px 8px}
+  .intel-stack #warReport{max-height:238px}
+  .intel-stack #leaderboard{max-height:220px}
+  .intel-stack #hotList{max-height:190px;overflow:auto}
+
+  .metric-grid{margin:0 0 14px;border-top:1px solid #29241e;border-bottom:1px solid #29241e;padding:10px 0;gap:10px}
+  .metric{min-height:96px;padding:14px 18px;background:linear-gradient(180deg,rgba(255,255,255,.01),rgba(255,255,255,.005));border-right:1px solid #29241e}
+  .metric:last-child{border-right:0}
+  .metric-label{font-size:9px;color:#6b655b}
+  .metric-value{font-size:22px}
+
+  .post-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .briefing-panel .briefing-body{padding:18px 18px 16px;color:#8d857a;font-size:12px;line-height:1.75}
+  .briefing-lines{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+  .briefing-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #211d19}
+  .briefing-item:nth-last-child(-n+2){border-bottom:0}
+  .briefing-num{width:22px;height:22px;flex:none;border:1px solid #302920;border-radius:4px;display:grid;place-items:center;font-family:"JetBrains Mono",monospace;font-size:9px;color:#8c7b66;margin-top:1px}
+  .briefing-item strong{display:block;color:#ddd6ca;font-size:12px;font-weight:650;margin-bottom:4px}
+  .briefing-item span{display:block;color:#887f72;font-size:11px;line-height:1.65}
+  .dominance-panel .briefing-body{padding:18px}
+  .dominance-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .dominance-card{border:1px solid #2a241d;background:linear-gradient(180deg,#11100e,#0b0b0a);padding:16px;border-radius:6px;min-height:120px}
+  .dominance-card small{display:block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.12em;color:#806e5e;text-transform:uppercase;margin-bottom:10px}
+  .dominance-card strong{display:block;font-size:20px;letter-spacing:-.04em;color:#f0ece3;margin-bottom:7px}
+  .dominance-card p{margin:0;color:#81796c;font-size:11.5px;line-height:1.65}
+
+  @media (max-width:1380px){
+    .hero-command-grid{grid-template-columns:290px minmax(0,1fr) 290px}
+    .battle-map-shell .map-stage{min-height:670px}
+  }
+  @media (max-width:1180px){
+    .op-center-strip{display:none}
+    .hero-command-grid{grid-template-columns:300px minmax(0,1fr)}
+    .intel-stack{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,1fr)}
+    .battle-map-shell .map-stage{min-height:620px}
+    .post-hero-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:900px){
+    .hero-command-grid{grid-template-columns:1fr}
+    .battle-map-shell{order:-1}
+    .intel-stack{grid-column:auto;display:flex}
+    .battle-map-shell .map-stage{min-height:500px;padding:16px 12px 10px}
+    .battle-map-shell svg#fr-map{max-width:540px}
+    .metric-grid{grid-template-columns:repeat(2,1fr)}
+    .metric:nth-child(2){border-right:0}
+    .metric{border-bottom:1px solid #29241e}
+    .metric:nth-child(3), .metric:nth-child(4){border-bottom:0}
+    .briefing-lines,.dominance-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .hero-intro{padding:18px 16px 16px}
+    .hero-intro h1{font-size:40px}
+    #btnConquerFrance.france-cta{padding:14px 16px;align-items:flex-start;gap:14px}
+    .battle-map-shell .map-head{padding:15px}
+    .battle-map-shell .map-stage{min-height:410px}
+    .metric{min-height:86px;padding:13px 14px}
+    .metric-value{font-size:18px}
+  }
+</style>
+
 </head>
 <body>
 <div class="shell">
@@ -417,55 +551,65 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
       <span class="brand-symbol">T</span>
       <span class="brand-word">terterr<span>.com</span></span>
     </a>
-    <div class="top-actions">
+    <div class="op-center-strip"><span>THÉÂTRE D’OPÉRATIONS — FRANCE</span><span class="slashes">///</span><span>FR-96 // GRID 44.351°N, 2.213°E</span><span class="live-inline">LIVE <span class="dot" style="display:inline-block;vertical-align:middle;margin-left:4px"></span></span></div><div class="top-actions">
       <div class="war-state"><span class="war-state-mark"></span><span>Conquête en cours</span></div>
       <div class="live-chip"><span class="dot"></span><span><strong id="statOnline">1</strong> commandant en ligne</span></div>
     </div>
   </header>
 
-  <section class="page-intro">
-    <div class="intro-copy">
-      <div class="eyebrow">Opération France · 96 territoires</div>
-      <h1>La France est à prendre.</h1>
-      <p>Choisis ta cible. Lance l’offensive. Ton nom, ta couleur et ton lien occupent le territoire jusqu’à ce qu’un autre commandant ose te le reprendre.</p>
-      <div class="intro-signals"><span><i></i> Guerre territoriale active</span><span>Prix +40 % après chaque prise</span><span>Historique public des conquêtes</span></div>
+  <main>
+    <section class="hero-command-grid">
+      
+<aside class="command-panel">
+  <section class="hero-intro panel">
+    <div class="hero-overline">Opération France · 96 départements</div>
+    <h1>La France est à prendre.</h1>
+    <p>Choisis ta cible. Lance l’invasion. Ton nom, ta couleur et ton lien s’affichent sur le territoire jusqu’à ce qu’un autre commandant vienne te le reprendre.</p>
+    <ul class="hero-facts">
+      <li>Guerre territoriale en temps réel</li>
+      <li>Prise de contrôle +40 % après chaque conquête</li>
+      <li>Historique public des conquêtes</li>
+    </ul>
+    <div class="hero-utility">Sélectionne un département sur la carte, ou lance l’opération totale.</div>
+  </section>
+
+  <button id="btnConquerFrance" class="france-cta" type="button">
+    <span class="france-cta-icon">⌁</span>
+    <span class="france-cta-copy">
+      <span class="france-cta-overline">Opération ultime</span>
+      <span class="france-cta-title">Lancer l’assaut national</span>
+      <span class="france-cta-sub">96 départements · une frappe · contrôle national</span>
+    </span>
+    <span class="france-cta-price" id="francePriceDisplay">250 €</span>
+  </button>
+
+  <section class="selected-target-frame panel">
+    <div class="panel-head">
+      <div>
+        <div class="panel-kicker">Territoire ciblé</div>
+        <h2>Préparation de l’invasion</h2>
+      </div>
+      <span class="panel-kicker">FR-96</span>
     </div>
-    <div class="campaign-seal"><span class="seal-code">FR // 96</span><strong>CONQUÊTE<br>NATIONALE</strong><small>LIVE TERRITORY WAR</small></div>
+    <div id="regionCard" class="placeholder">Sélectionne une cible sur la carte pour préparer l’offensive.</div>
   </section>
+</aside>
 
-  <section class="metric-grid" aria-label="Statistiques">
-    <div class="metric"><span class="metric-label">Combattants</span><div><span class="metric-value" id="statVisitors">0</span><span class="metric-meta">depuis le lancement</span></div></div>
-    <div class="metric"><span class="metric-label">Butin total</span><div><span class="metric-value money" id="statPlundered">0 €</span><span class="metric-meta">engagé au front</span></div></div>
-    <div class="metric"><span class="metric-label">Territoires occupés</span><div><span class="metric-value" id="statClaimed">0/96</span><span class="metric-meta">sous contrôle</span></div></div>
-    <div class="metric"><span class="metric-label">État du front</span><div><span class="metric-value" style="font-family:Inter,sans-serif;font-size:17px;color:var(--success);letter-spacing:-.02em">EN GUERRE</span><span class="metric-meta">24/7 · temps réel</span></div></div>
-  </section>
-
-  <main class="app-grid">
-    <aside class="side-stack left">
-      <section class="panel">
-        <div class="panel-head"><div><div class="panel-kicker">Transmission live</div><h2>Journal du front</h2></div><div class="section-status"><span class="dot"></span>live</div></div>
-        <div class="panel-body"><div id="warReport"></div></div>
-      </section>
-      <section class="panel">
-        <div class="panel-head"><div><div class="panel-kicker">Domination</div><h2>Puissances en place</h2></div><span class="panel-kicker">Top 10</span></div>
-        <div class="panel-body"><div id="leaderboard"></div></div>
-      </section>
-    </aside>
-
-    <section class="map-column">
-      <section class="panel map-panel">
-        <div class="map-head">
-          <div class="map-title"><div class="command-label">CENTRE DE COMMANDEMENT // CARTE TACTIQUE</div><h2>Théâtre d’opérations — France</h2><div class="sub">Sélectionne un territoire. Évalue son prix. Lance l’invasion.</div></div>
-          <div class="legend"><span class="legend-item"><span class="sw" style="background:var(--unclaimed)"></span>Neutre</span><span class="legend-item"><span class="sw" style="background:var(--brand)"></span>Occupé</span></div>
+      
+<section class="battle-map-shell">
+  <section class="panel map-panel">
+    <div class="map-head">
+      <div class="map-title"><div class="command-label">CENTRE DE COMMANDEMENT // CARTE TACTIQUE</div><h2>Théâtre d’opérations — France</h2><div class="sub">Sélectionne un territoire. Évalue son prix. Lance l’invasion.</div></div>
+      <div class="legend"><span class="legend-item"><span class="sw" style="background:var(--unclaimed)"></span>Neutre</span><span class="legend-item"><span class="sw" style="background:var(--brand)"></span>Occupé</span></div>
+    </div>
+    <div class="map-stage">
+      <div id="mapholder">
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoomInBtn" title="Zoomer" type="button" aria-label="Zoomer">+</button>
+          <button class="zoom-btn" id="zoomOutBtn" title="Dézoomer" type="button" aria-label="Dézoomer">−</button>
+          <button class="zoom-btn" id="zoomResetBtn" title="Réinitialiser la vue" type="button" aria-label="Réinitialiser">↺</button>
         </div>
-        <div class="map-stage">
-          <div id="mapholder">
-            <div class="zoom-controls">
-              <button class="zoom-btn" id="zoomInBtn" title="Zoomer" type="button" aria-label="Zoomer">+</button>
-              <button class="zoom-btn" id="zoomOutBtn" title="Dézoomer" type="button" aria-label="Dézoomer">−</button>
-              <button class="zoom-btn" id="zoomResetBtn" title="Réinitialiser la vue" type="button" aria-label="Réinitialiser">↺</button>
-            </div>
-<svg id="fr-map" viewBox="105 18 568 567" xmlns="http://www.w3.org/2000/svg">
+        <svg id="fr-map" viewBox="105 18 568 567" xmlns="http://www.w3.org/2000/svg">
 <g class="region region-11" data-nom="Île-de-France" data-code_insee="11">
 		<path id="dept-75" class="dept region-11 departement departement-75 departement-paris" data-nom="Paris" data-numerodepartement="75" d="M396.8 154.7L393.6 154.2L391.1 155.9L394.1 159.4L399.4 159.3L397.6 157.4L396.8 154.7Z"/>
 		<path id="dept-77" class="dept region-11 departement departement-77 departement-seine-et-marne" data-nom="Seine-et-Marne" data-numerodepartement="77" d="m441.1 176.1l-2.9 0.8 0.4 8.5-15.4 3-0.2 5.8-3.9 5.4-11.2 2.7-9.2-0.7 2.6-1.5 0.6-2.7-4.2-4.3-0.7-3.1 3.4-4.8 4-17.2-0.5-1 1.1-4.1-0.3-2.9v-0.1l-1.3-4.7 1.3-2.5-1.7-5.1 0.1-0.1 1.7-2.3-0.2-2 6.9 1 2-2.2 2.5 1.6 8.1-2.9 2.6 0.7 1.8 2.5-0.7 2.8 3.9 4.2 9.3 6-0.4 2-2.6 2.2 3.5 8.3 2.6 1.7z"/>
@@ -589,32 +733,65 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 		<path id="dept-2B" class="dept region-94 departement departement-2B departement-haute-corse" data-nom="Haute-Corse" data-numerodepartement="2B" d="m643.7 551.5v1l-3.2 1.7-3.8-0.5-3.7-11-2.7-1.1-0.5-3.2-6-5.9-6-3.4-1.2-3.5-13.6-2.1v-0.2l3.9-5-0.3-3.4 2.2-2.8 2.8-0.3 0.9-2.9 10.7-4.2 3.5-4.9 8.6 1.3-0.5-17.4 2.4-2 2.9 1.1 0.2 0.9 1.5 8.2-0.5 10.6 4 5.6 3.8 26-5.4 11.9v5.5z"/>
 	</g>
 <g id="icons-layer"></g>        </svg>
-          </div>
-        </div>
-        <div id="regionCard" class="placeholder">Sélectionne une cible sur la carte pour préparer l’offensive.</div>
-      </section>
+      </div>
+    </div>
+  </section>
+</section>
 
-      <button id="btnConquerFrance" class="france-cta" type="button">
-        <span class="france-cta-icon">⌁</span><span class="france-cta-copy"><span class="france-cta-overline">OPÉRATION ULTIME</span><span class="france-cta-title">Envahir toute la France</span><span class="france-cta-sub">96 départements · une frappe · contrôle national instantané</span></span>
-        <span class="france-cta-price" id="francePriceDisplay">250 €</span>
-      </button>
+      
+<aside class="intel-stack">
+  <section class="panel">
+    <div class="panel-head"><div><div class="panel-kicker">Transmission live</div><h2>Journal de guerre</h2></div><div class="section-status"><span class="dot"></span>live</div></div>
+    <div class="panel-body"><div id="warReport"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div><div class="panel-kicker">Domination</div><h2>Classement des puissances</h2></div><span class="panel-kicker">Top 10</span></div>
+    <div class="panel-body"><div id="leaderboard"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><div><div class="panel-kicker">Renseignement</div><h2>Cibles prioritaires</h2></div><span class="panel-kicker">Top 5</span></div>
+    <div class="panel-body"><div id="hotList"></div></div>
+  </section>
+</aside>
+
     </section>
+    
+<section class="metric-grid" aria-label="Statistiques">
+  <div class="metric"><span class="metric-label">Combattants</span><div><span class="metric-value" id="statVisitors">0</span><span class="metric-meta">en ligne maintenant</span></div></div>
+  <div class="metric"><span class="metric-label">Butin total</span><div><span class="metric-value money" id="statPlundered">0 €</span><span class="metric-meta">engagés au front</span></div></div>
+  <div class="metric"><span class="metric-label">Territoires occupés</span><div><span class="metric-value" id="statClaimed">0/96</span><span class="metric-meta">départements</span></div></div>
+  <div class="metric"><span class="metric-label">État du front</span><div><span class="metric-value" style="font-family:Inter,sans-serif;font-size:17px;color:var(--brand);letter-spacing:-.02em">EN GUERRE</span><span class="metric-meta">aucune trêve</span></div></div>
+</section>
 
-    <aside class="side-stack right">
-      <section class="panel">
-        <div class="panel-head"><div><div class="panel-kicker">Renseignement</div><h2>Cibles prioritaires</h2></div><span class="panel-kicker">Top 5</span></div>
-        <div class="panel-body"><div id="hotList"></div></div>
-      </section>
-      <section class="panel">
-        <div class="panel-head"><div><div class="panel-kicker">Protocole</div><h2>Règles d’engagement</h2></div></div>
-        <div class="rules">
-          <div class="rule-line"><span class="rule-index">01</span><span>Choisis ta cible et engage le prix affiché pour lancer l’offensive.</span></div>
-          <div class="rule-line"><span class="rule-index">02</span><span>Après la prise, <strong>ton nom, ta couleur et ton lien</strong> occupent immédiatement le territoire.</span></div>
-          <div class="rule-line"><span class="rule-index">03</span><span>Chaque reprise augmente le coût du territoire de <strong>40 %</strong> : plus la guerre dure, plus la cible devient prestigieuse.</span></div>
-          <div class="rule-line"><span class="rule-index">04</span><span>La domination se mesure au nombre de territoires détenus, puis au capital engagé.</span></div>
-        </div>
-      </section>
-    </aside>
+    
+<section class="post-hero-grid">
+  <section class="panel briefing-panel">
+    <div class="panel-head"><div><div class="panel-kicker">Protocole</div><h2>Règles d’engagement</h2></div><span class="panel-kicker">4 directives</span></div>
+    <div class="briefing-body">
+      <div class="briefing-lines">
+        <div class="briefing-item"><div class="briefing-num">01</div><div><strong>Choisis ta cible</strong><span>Clique sur un département de la carte tactique pour consulter son prix et ouvrir l’ordre d’attaque.</span></div></div>
+        <div class="briefing-item"><div class="briefing-num">02</div><div><strong>Affiche ton étendard</strong><span>Après paiement, ton nom, ta couleur et ton lien s’impriment immédiatement sur le territoire conquis.</span></div></div>
+        <div class="briefing-item"><div class="briefing-num">03</div><div><strong>La guerre fait monter les prix</strong><span>Chaque reprise augmente le coût du territoire de 40 % : plus la zone est convoitée, plus elle devient prestigieuse.</span></div></div>
+        <div class="briefing-item"><div class="briefing-num">04</div><div><strong>La domination est publique</strong><span>Le journal, le classement et les cibles prioritaires évoluent en temps réel sous les yeux de tous.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel dominance-panel">
+    <div class="panel-head"><div><div class="panel-kicker">Doctrine</div><h2>Dominer le théâtre d’opérations</h2></div><span class="panel-kicker">Live Territory War</span></div>
+    <div class="briefing-body">
+      <div class="dominance-grid">
+        <div class="dominance-card"><small>Contrôle</small><strong>96 territoires</strong><p>Chaque département devient une position stratégique visible publiquement sur la carte de France.</p></div>
+        <div class="dominance-card"><small>Pression</small><strong>Temps réel</strong><p>Le site fonctionne comme une war room : activité, prise de contrôle et hiérarchie bougent en continu.</p></div>
+        <div class="dominance-card"><small>Valeur</small><strong>+40 % / reprise</strong><p>Une cible prestigieuse attire les offensives et augmente naturellement sa valeur marchande.</p></div>
+        <div class="dominance-card"><small>Prestige</small><strong>Nom visible</strong><p>Ta présence sur un territoire agit comme un étendard : elle expose ton nom et ton lien à toute l’audience.</p></div>
+      </div>
+    </div>
+  </section>
+</section>
+
   </main>
 
   <footer class="site-footer">
@@ -623,6 +800,8 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   </footer>
 </div>
 
+
+</div>
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-eyebrow">ORDRE D’ATTAQUE</div><h3 id="modalTitle">Envahir le territoire</h3>
@@ -670,6 +849,7 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 (function(){
 
@@ -1695,5 +1875,5 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
   })();
 })();
 </script>
-</body>
-</html>
+
+</body></html>
