@@ -592,11 +592,6 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 </style>
 
 
-<style id="interface-load-shake">
-  body.interface-impact .shell{animation:pageImpact .32s ease-out;}
-  @keyframes pageImpact{0%,100%{transform:translate(0,0)}20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-2px,-1px)}80%{transform:translate(2px,1px)}}
-  @media (prefers-reduced-motion:reduce){body.interface-impact .shell{animation:none}}
-</style>
 </head>
 <body>
 <div class="shell">
@@ -1945,12 +1940,4 @@ svg#fr-map .dept.selected{stroke:var(--brand);stroke-width:2.25;filter:brightnes
 </script>
 
 
-<script id="interface-load-shake-script">
-(function(){
-  window.addEventListener('load', function(){
-    document.body.classList.add('interface-impact');
-    setTimeout(function(){ document.body.classList.remove('interface-impact'); }, 360);
-  }, {once:true});
-})();
-</script>
 </body></html>
